@@ -21,6 +21,11 @@ public class LandingController {
 
     @GetMapping("/landing")
     public String land(){
+        return "/landing-v2";
+    }
+
+    @GetMapping("/landing-v2")
+    public String land2(){
         return "/landing";
     }
 

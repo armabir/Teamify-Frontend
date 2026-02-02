@@ -7,10 +7,7 @@ import org.example.teamifyfrontend.model.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -36,10 +33,10 @@ public class DiscoverController {
         model.addAttribute("users", userList);
         model.addAttribute("teams", teamApiClient.getAllTeams());
 
-        return "discover";
+        return "discover-v2";
     }
 
-    @GetMapping("/discover-v2")
+    @GetMapping("/discover-v1")
     public String discover2(Model model, HttpSession session){
 
         String loggedUser = session.getAttribute("loggedUser").toString();
@@ -51,7 +48,7 @@ public class DiscoverController {
         model.addAttribute("users", userList);
         model.addAttribute("teams", teamApiClient.getAllTeams());
 
-        return "discover-v2";
+        return "discover-v3";
     }
 
 
