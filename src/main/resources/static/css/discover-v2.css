@@ -1,0 +1,412 @@
+/* ========================================
+   1. GLOBAL RESET & VARIABLES
+   ======================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* Color Palette - Void / Cyan Theme */
+    --bg-primary: #030305; /* Deep void black */
+    --bg-secondary: #0a0a0c;
+
+    /* The Glass Card Background */
+    --card-bg: rgba(10, 10, 12, 0.6);
+    --card-border: rgba(255, 255, 255, 0.08);
+
+    --text-primary: #ffffff;
+    --text-secondary: #94a3b8; /* Slate 400 */
+    --text-tertiary: #64748b;  /* Slate 500 */
+
+    /* Accents */
+    --accent-cyan: #22d3ee;   /* Tailwind Cyan 400 */
+    --accent-violet: #8b5cf6; /* Tailwind Violet 500 */
+
+    --text-highlight: var(--accent-cyan);
+
+    --header-gradient: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+    --accent-gradient: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-violet) 100%);
+
+    /* Dimensions & Spacing */
+    --sidebar-width: 260px;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+
+    /* Borders & Radius */
+    --radius-sm: 0.5rem;
+    --radius-md: 0.75rem;
+    --radius-lg: 1.5rem; /* Larger radius like landing cards */
+
+    /* Animation */
+    --transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, .logo-text {
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+/* --- AMBIENT GLOW (Matches landing orbs) --- */
+.ambient-glow {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(100px);
+    z-index: -1;
+    opacity: 0.25;
+    pointer-events: none;
+}
+.glow-1 {
+    width: 500px; height: 500px;
+    background: #312e81; /* Indigo */
+    top: -100px; left: -100px;
+}
+.glow-2 {
+    width: 400px; height: 400px;
+    background: #164e63; /* Cyan dark */
+    bottom: 0; right: 0;
+}
+
+/* ========================================
+   2. SIDEBAR & LAYOUT LOGIC
+   ======================================== */
+.sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    width: var(--sidebar-width); height: 100vh;
+    background: rgba(3, 3, 5, 0.8);
+    backdrop-filter: blur(12px);
+    border-right: 1px solid var(--card-border);
+    z-index: 1000;
+    display: flex; flex-direction: column;
+    transform: translateX(0);
+    transition: transform 0.3s ease;
+}
+
+.page-wrapper {
+    transition: margin-left 0.3s ease;
+    min-height: 100vh;
+    margin-left: var(--sidebar-width);
+}
+
+/* --- CLOSED STATE (Applied via JS) --- */
+body.sidebar-closed .sidebar { transform: translateX(-100%); }
+body.sidebar-closed .page-wrapper { margin-left: 0; }
+
+.sidebar-toggle-btn {
+    position: fixed; top: 1rem; left: 1rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--card-border);
+    color: var(--text-primary);
+    padding: 0.75rem; border-radius: var(--radius-sm);
+    cursor: pointer; z-index: 900;
+    display: flex; align-items: center; justify-content: center;
+    transition: var(--transition);
+    opacity: 0; pointer-events: none;
+}
+
+body.sidebar-closed .sidebar-toggle-btn { opacity: 1; pointer-events: auto; }
+.sidebar-toggle-btn:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+
+@media (max-width: 991px) {
+    .sidebar { transform: translateX(-100%); }
+    .page-wrapper { margin-left: 0; }
+    .sidebar-toggle-btn { opacity: 1; pointer-events: auto; }
+    body.sidebar-open .sidebar { transform: translateX(0); }
+    body.sidebar-open .sidebar-overlay { display: block; opacity: 1; }
+}
+
+.sidebar-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px);
+    z-index: 950; display: none; opacity: 0; transition: opacity 0.3s ease;
+}
+
+/* ========================================
+   3. SIDEBAR CONTENT
+   ======================================== */
+.sidebar-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: var(--spacing-lg); border-bottom: 1px solid var(--card-border);
+}
+.sidebar-logo { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.05em; }
+.sidebar-logo .text-highlight { color: var(--accent-cyan); }
+
+.sidebar-close-btn {
+    background: none; border: none; color: var(--text-secondary);
+    font-size: 1.25rem; cursor: pointer; transition: var(--transition);
+}
+.sidebar-close-btn:hover { color: var(--accent-cyan); }
+
+.sidebar-nav { flex: 1; padding: var(--spacing-md) 0; }
+.sidebar-link {
+    display: flex; align-items: center; gap: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-lg);
+    color: var(--text-secondary); text-decoration: none;
+    transition: var(--transition); border-left: 3px solid transparent;
+    font-size: 0.95rem; font-weight: 500;
+}
+.sidebar-link:hover, .sidebar-link.active {
+    background: rgba(34, 211, 238, 0.05); /* Very light cyan tint */
+    color: var(--text-primary);
+    border-left-color: var(--accent-cyan);
+}
+.sidebar-link i { width: 20px; text-align: center; }
+.sidebar-footer { border-top: 1px solid var(--card-border); padding: var(--spacing-md); }
+
+/* ========================================
+   4. MAIN CONTENT & HEADER
+   ======================================== */
+.main-content {
+    padding: var(--spacing-lg); max-width: 1400px; margin: 0 auto;
+    padding-top: 5rem;
+}
+
+.discover-header { margin-bottom: var(--spacing-xl); }
+.discover-header h1 {
+    font-size: 3rem; font-weight: 700;
+    color: var(--text-primary); margin-bottom: 0.5rem;
+    letter-spacing: -0.05em;
+}
+.text-gradient {
+    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 30px rgba(34, 211, 238, 0.3);
+}
+.discover-header p { color: var(--text-secondary); margin-bottom: var(--spacing-lg); font-size: 1.1rem; }
+
+/* Search Bar */
+.search-bar-container {
+    display: flex; gap: 10px; background: rgba(255,255,255,0.03);
+    border: 1px solid var(--card-border); padding: 0.5rem; border-radius: var(--radius-md);
+    max-width: 600px; align-items: center; margin-bottom: var(--spacing-lg);
+    transition: var(--transition);
+}
+.search-bar-container:focus-within {
+    border-color: rgba(34, 211, 238, 0.5);
+    box-shadow: 0 0 15px rgba(34, 211, 238, 0.1);
+}
+
+.search-icon { margin-left: 15px; color: var(--text-tertiary); }
+.glass-input {
+    background: transparent; border: none; color: var(--text-primary);
+    padding: 10px; flex-grow: 1; font-family: 'Inter', sans-serif; font-size: 1rem; outline: none;
+}
+.glass-input::placeholder { color: var(--text-tertiary); }
+
+.btn-primary {
+    background: var(--bg-secondary); border: 1px solid var(--card-border); color: white;
+    padding: 10px 25px; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer;
+    transition: var(--transition);
+}
+.btn-primary:hover {
+    background: var(--accent-cyan);
+    color: #000; border-color: var(--accent-cyan);
+    box-shadow: 0 0 15px rgba(34, 211, 238, 0.4);
+}
+
+/* Filters */
+.filters { display: flex; gap: 10px; flex-wrap: wrap; }
+.filter-tag {
+    background: transparent; border: 1px solid var(--card-border);
+    color: var(--text-secondary); padding: 8px 20px; border-radius: 20px;
+    cursor: pointer; transition: var(--transition); font-size: 0.9rem;
+    font-family: 'Space Grotesk', sans-serif;
+}
+.filter-tag.active, .filter-tag:hover {
+    border-color: var(--accent-cyan); color: var(--accent-cyan);
+    background: rgba(34, 211, 238, 0.05);
+}
+
+/* ========================================
+   5. CARDS GENERAL (Bento Style)
+   ======================================== */
+.content-section { margin-bottom: var(--spacing-xl); }
+.section-title {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: var(--spacing-md);
+}
+.section-title h2 { font-size: 1.75rem; display: flex; gap: 10px; align-items: center; color: var(--text-primary); }
+.section-title h2 i { color: var(--accent-cyan); }
+.view-all { color: var(--text-secondary); text-decoration: none; font-weight: 500; font-size: 0.9rem; transition: var(--transition); }
+.view-all:hover { color: var(--accent-cyan); }
+
+.card-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--spacing-lg);
+}
+
+.glass-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--card-border);
+    border-radius: 24px; /* Match landing page radius */
+    overflow: hidden;
+    position: relative;
+    transition: transform var(--transition), border-color var(--transition);
+    display: flex; flex-direction: column;
+}
+/* Decoration line at top to mimic the border gradient mask */
+.card-decoration {
+    position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+}
+
+.glass-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(34, 211, 238, 0.3);
+    box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5);
+}
+
+/* ========================================
+   6. USER CARD SPECIFICS
+   ======================================== */
+.user-card .card-banner {
+    height: 90px;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.03), transparent);
+    position: relative;
+}
+.user-card .card-avatar {
+    margin-top: -45px; margin-left: 24px; position: relative;
+}
+.avatar-placeholder {
+    width: 70px; height: 70px; border-radius: 50%; border: 4px solid #131315; /* Match approx card bg */
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; font-weight: bold; color: white;
+}
+.bg-gradient-avatar { background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet)); }
+
+.user-card .card-body { padding: var(--spacing-md) 24px; flex-grow: 1; }
+.user-card h3 { margin: 0; font-size: 1.25rem; color: var(--text-primary); }
+.username { color: var(--accent-cyan); font-size: 0.9rem; display: block; margin-bottom: 5px; font-family: 'Space Grotesk', sans-serif;}
+.role { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 20px; line-height: 1.4; }
+
+/* Skills */
+.skills-container { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.skill-pill {
+    background: rgba(255, 255, 255, 0.05); color: #e2e8f0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.75rem; padding: 4px 10px; border-radius: 12px;
+}
+
+/* User Card Footer */
+.user-card .card-footer {
+    padding: var(--spacing-md) 24px;
+    border-top: 1px solid var(--card-border);
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    background: rgba(0,0,0,0.2);
+}
+.card-actions { display: flex; gap: 8px; align-items: center; }
+
+/* Buttons */
+.btn-outline-disabled {
+    background: transparent; border: 1px solid var(--card-border);
+    color: var(--text-tertiary); padding: 6px 14px; border-radius: 20px;
+    font-size: 0.8rem; font-weight: 500; cursor: not-allowed; opacity: 0.5;
+}
+
+.btn-cyan-sm {
+    background: rgba(34, 211, 238, 0.1);
+    color: var(--accent-cyan) !important;
+    border: 1px solid rgba(34, 211, 238, 0.2);
+    padding: 7px 16px; border-radius: 20px;
+    font-size: 0.85rem; font-weight: 600;
+    text-decoration: none !important; display: inline-flex;
+    align-items: center; justify-content: center;
+    transition: all 0.2s ease;
+}
+.btn-cyan-sm:hover {
+    background: var(--accent-cyan); color: #000 !important;
+    box-shadow: 0 0 15px rgba(34, 211, 238, 0.4);
+}
+
+.btn-icon {
+    width: 36px; height: 36px; background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--card-border); color: var(--text-secondary);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: var(--transition); text-decoration: none;
+}
+.btn-icon:hover {
+    border-color: var(--accent-cyan); color: var(--accent-cyan);
+    background: rgba(34, 211, 238, 0.1);
+}
+
+/* ========================================
+   7. TEAM CARD SPECIFICS
+   ======================================== */
+.team-card {
+    padding: 0; overflow: hidden; position: relative;
+    display: flex; flex-direction: column; min-height: 320px;
+}
+
+.team-banner {
+    height: 120px;
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    background-size: cover; background-position: center;
+    position: relative;
+    border-bottom: 1px solid var(--card-border);
+}
+
+.team-card .card-body {
+    padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column;
+}
+
+.team-card h3 {
+    font-size: 1.4rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-primary);
+}
+
+/* Goal Row (Cyan Icon + Text) */
+.team-goal-row {
+    display: flex; align-items: center; gap: 8px;
+    color: var(--accent-cyan); font-size: 0.9rem; font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.team-card .project-desc {
+    color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6;
+    margin-bottom: auto;
+}
+
+.team-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--card-border);
+    background: rgba(0,0,0,0.3);
+}
+
+.member-info { display: flex; align-items: center; gap: 8px; }
+.member-count-circle {
+    width: 24px; height: 24px;
+    background: rgba(139, 92, 246, 0.2); color: var(--accent-violet);
+    border: 1px solid rgba(139, 92, 246, 0.4);
+    border-radius: 50%; font-size: 0.75rem; font-weight: bold;
+    display: flex; align-items: center; justify-content: center;
+}
+
+.view-team-link {
+    color: var(--text-secondary); font-size: 0.9rem; text-decoration: none;
+    font-weight: 500; transition: var(--transition);
+    display: flex; align-items: center; gap: 5px;
+}
+.view-team-link:hover { color: var(--accent-cyan); gap: 8px; }
+
+/* Empty State */
+.empty-state {
+    background: rgba(255,255,255,0.02);
+    border: 1px dashed var(--card-border);
+    border-radius: 24px; padding: 3rem; text-align: center;
+}
+.empty-state i { font-size: 2rem; color: var(--text-tertiary); margin-bottom: 1rem; }
+.empty-state h3 { color: var(--text-secondary); font-weight: 500; }

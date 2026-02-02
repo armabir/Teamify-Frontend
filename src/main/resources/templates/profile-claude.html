@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${user.firstName} + ' - Teamify Profile'">Profile - Teamify</title>
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="/css/profile-claude.css">
+</head>
+<body>
+
+<!-- ========================================
+     SIDEBAR NAVIGATION
+========================================= -->
+<aside id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+        <div class="sidebar-logo">
+            <i class="fas fa-users-cog"></i>
+            <span class="sidebar-logo-text">Teamify</span>
+        </div>
+        <button id="sidebar-close" class="sidebar-close-btn" aria-label="Close sidebar">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <nav class="sidebar-nav">
+        <a href="/profile" class="sidebar-link active">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </a>
+        <a href="/dashboard" class="sidebar-link">
+            <i class="fas fa-th-large"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="/teams" class="sidebar-link">
+            <i class="fas fa-users"></i>
+            <span>Teams</span>
+        </a>
+        <a href="/events" class="sidebar-link">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Events</span>
+        </a>
+    </nav>
+
+    <div class="sidebar-footer">
+        <a href="/logout" class="sidebar-link logout-link">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+        </a>
+    </div>
+</aside>
+
+<!-- Sidebar Toggle Button -->
+<button id="sidebar-toggle" class="sidebar-toggle-btn" aria-label="Toggle sidebar">
+    <i class="fas fa-bars"></i>
+</button>
+
+<!-- Sidebar Overlay (for mobile) -->
+<div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+<!-- Main Content Wrapper -->
+<div class="page-wrapper">
+
+    <!-- ========================================
+         PROFILE HEADER SECTION (Compact Card)
+         Contains: Cover Image, Profile Image, Name, Username, Bio
+    ========================================= -->
+    <div class="header-wrapper">
+        <header class="glass-card profile-header-card">
+            <!-- Cover Image Section -->
+            <div class="header-cover" th:style="'background-image: url(' + ${user.coverPictureUrl} + ');'">
+                <div class="header-cover-overlay"></div>
+            </div>
+
+            <!-- Profile Content -->
+            <div class="header-content">
+                <!-- Profile Image (Rectangular) -->
+                <div class="header-profile-image">
+                    <img th:src="${user.profilePictureUrl}"
+                         th:alt="${user.firstName} + ' ' + ${user.lastName}"
+                         class="profile-img">
+                </div>
+
+                <!-- Profile Info -->
+                <div class="header-info">
+                    <h1 class="header-name" th:text="${user.firstName} + ' ' + ${user.lastName}">John Doe</h1>
+                    <p class="header-username" th:text="'@' + ${user.userName}">@johndoe</p>
+                    <p class="header-bio" th:text="${user.bio}" th:if="${user.bio != null}">Full-stack developer passionate about building scalable applications.</p>
+                </div>
+            </div>
+        </header>
+    </div>
+
+    <!-- ========================================
+         MAIN CONTENT SECTION
+         Two-column layout: Left sidebar + Right content area
+    ========================================= -->
+    <main class="main-content">
+
+        <!-- LEFT COLUMN: About, Skills, Interests -->
+        <aside class="left-column">
+
+            <!-- ABOUT CARD -->
+            <section class="glass-card about-card">
+                <h2 class="card-title">About</h2>
+                <p class="about-text" th:text="${user.about}">
+                    I'm a passionate developer with expertise in backend systems and modern web technologies.
+                </p>
+
+                <!-- Location -->
+                <div class="info-item" th:if="${user.location}">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span th:text="${user.location}">San Francisco, CA</span>
+                </div>
+
+                <!-- Social Links -->
+                <div class="social-links" th:if="${user.socialMediaLinkList != null and !user.socialMediaLinkList.isEmpty()}">
+                    <h3 class="section-subtitle">Connect</h3>
+                    <div class="social-links-container">
+                        <a th:each="link : ${user.socialMediaLinkList}"
+                           th:href="${link}"
+                           class="social-link"
+                           target="_blank"
+                           rel="noopener noreferrer">
+                            <i class="fas fa-link"></i>
+                            <span th:text="${link}">https://github.com/username</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SKILLS CARD -->
+            <section class="glass-card skills-card" th:if="${user.skills != null and !user.skills.isEmpty()}">
+                <h2 class="card-title">Skills</h2>
+                <div class="tags-container">
+                    <span th:each="skill : ${user.skills}"
+                          th:text="${skill.name}"
+                          class="tag skill-tag">
+                        Spring Boot
+                    </span>
+                </div>
+            </section>
+
+            <!-- INTERESTS CARD -->
+            <section class="glass-card interests-card" th:if="${user.interests != null and !user.interests.isEmpty()}">
+                <h2 class="card-title">Interests</h2>
+                <div class="tags-container">
+                    <span th:each="interest : ${user.interests}"
+                          th:text="${interest.name}"
+                          class="tag interest-tag">
+                        Machine Learning
+                    </span>
+                </div>
+
+                <!-- Looking For Section -->
+                <div class="looking-for" th:if="${user.lookingForList != null and !user.lookingForList.isEmpty()}">
+                    <h3 class="section-subtitle">Looking For</h3>
+                    <ul class="looking-for-list">
+                        <li th:each="item : ${user.lookingForList}" th:text="${item}">
+                            Collaboration opportunities
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+        </aside>
+
+        <!-- RIGHT COLUMN: Projects, Education, Experience with Toggle -->
+        <section class="right-column">
+
+            <!-- TOGGLE BAR -->
+            <div class="glass-card toggle-bar">
+                <button class="toggle-btn active" data-section="projects">
+                    <i class="fas fa-folder"></i>
+                    Projects
+                </button>
+                <button class="toggle-btn" data-section="education">
+                    <i class="fas fa-graduation-cap"></i>
+                    Education
+                </button>
+                <button class="toggle-btn" data-section="experience">
+                    <i class="fas fa-briefcase"></i>
+                    Experience
+                </button>
+            </div>
+
+            <!-- CONTENT CONTAINER -->
+            <div class="content-wrapper">
+
+                <!-- PROJECTS SECTION -->
+                <div id="projects-section" class="content-section active">
+                    <div class="projects-grid" th:if="${user.projectList != null and !user.projectList.isEmpty()}">
+                        <article th:each="project : ${user.projectList}" class="glass-card project-card">
+                            <!-- Project Cover Image -->
+                            <div class="project-cover" th:style="'background-image: url(' + ${project.coverImageUrl} + ');'">
+                                <div class="project-overlay"></div>
+                            </div>
+
+                            <!-- Project Content -->
+                            <div class="project-content">
+                                <h3 class="project-title" th:text="${project.title}">E-Commerce Platform</h3>
+                                <p class="project-description" th:text="${project.description}">
+                                    A full-featured online shopping platform with payment integration.
+                                </p>
+
+                                <!-- Role & Dates -->
+                                <div class="project-meta">
+                                    <span class="meta-item" th:if="${project.role != null}">
+                                        <i class="fas fa-user-tag"></i>
+                                        <span th:text="${project.role}">Lead Developer</span>
+                                    </span>
+
+                                    <!-- Dates -->
+                                    <span class="meta-item">
+                                        <i class="fas fa-calendar"></i>
+                                        <span th:text="${project.startDate} + ' - ' + (${project.endDate != null} ? ${project.endDate} : 'Present')">Jan 2024 - Present</span>
+                                    </span>
+                                </div>
+
+                                <!-- Tech Stack Tags -->
+                                <div class="tech-stack" th:if="${project.techStacks != null and !project.techStacks.isEmpty()}">
+                                    <span th:each="tech : ${project.techStacks}"
+                                          th:text="${tech}"
+                                          class="tag tech-tag">
+                                        React
+                                    </span>
+                                </div>
+
+                                <!-- Learn More Button -->
+                                <a th:href="${project.projectUrl}"
+                                   class="btn-learn-more"
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   th:if="${project.projectUrl != null and !project.projectUrl.isEmpty()}">
+                                    Learn More
+                                    <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </article>
+                    </div>
+
+                    <!-- Empty State -->
+                    <div th:if="${user.projectList == null or user.projectList.isEmpty()}" class="empty-state">
+                        <i class="fas fa-folder-open"></i>
+                        <p>No projects to display yet.</p>
+                    </div>
+                </div>
+
+                <!-- EDUCATION SECTION -->
+                <div id="education-section" class="content-section">
+                    <div class="vertical-cards" th:if="${user.educationList != null and !user.educationList.isEmpty()}">
+                        <article th:each="edu : ${user.educationList}" class="glass-card education-card">
+                            <div class="card-icon">
+                                <img th:src="${edu.institutionImageUrl}"
+                                     th:alt="${edu.institutionName}"
+                                     class="institution-icon"
+                                     th:if="${edu.institutionImageUrl != null}">
+                                <i class="fas fa-university" th:unless="${edu.institutionImageUrl != null}"></i>
+                            </div>
+
+                            <div class="card-content">
+                                <h3 class="card-primary" th:text="${edu.degree}">Bachelor of Science</h3>
+                                <p class="card-secondary" th:text="${edu.institutionName}">Stanford University</p>
+                                <p class="card-tertiary" th:text="${edu.fieldOfStudy}" th:if="${edu.fieldOfStudy != null}">Computer Science</p>
+
+                                <div class="card-meta">
+                                    <span class="meta-item">
+                                        <i class="fas fa-calendar"></i>
+                                        <span th:text="${edu.startDate} + ' - ' + (${edu.endDate != null} ? ${edu.endDate} : 'Present')">2020 - 2024</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+
+                    <!-- Empty State -->
+                    <div th:if="${user.educationList == null or user.educationList.isEmpty()}" class="empty-state">
+                        <i class="fas fa-graduation-cap"></i>
+                        <p>No education information added yet.</p>
+                    </div>
+                </div>
+
+                <!-- EXPERIENCE SECTION -->
+                <div id="experience-section" class="content-section">
+                    <div class="vertical-cards" th:if="${user.experienceList != null and !user.experienceList.isEmpty()}">
+                        <article th:each="exp : ${user.experienceList}" class="glass-card experience-card">
+                            <div class="card-icon">
+                                <img th:src="${exp.companyImageUrl}"
+                                     th:alt="${exp.companyName}"
+                                     class="company-icon"
+                                     th:if="${exp.companyImageUrl != null}">
+                                <i class="fas fa-building" th:unless="${exp.companyImageUrl != null}"></i>
+                            </div>
+
+                            <div class="card-content">
+                                <h3 class="card-primary" th:text="${exp.role}">Senior Software Engineer</h3>
+                                <p class="card-secondary" th:text="${exp.companyName}">Tech Corp</p>
+                                <p class="card-location" th:if="${exp.location != null}">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span th:text="${exp.location}">New York, NY</span>
+                                </p>
+
+                                <div class="card-meta">
+                                    <span class="meta-item">
+                                        <i class="fas fa-calendar"></i>
+                                        <span th:text="${exp.startDate} + ' - ' + (${exp.endDate != null} ? ${exp.endDate} : 'Present')">Jan 2023 - Present</span>
+                                    </span>
+                                </div>
+
+                                <p class="card-description" th:text="${exp.description}" th:if="${exp.description != null}">
+                                    Led a team of developers in building scalable microservices architecture.
+                                </p>
+                            </div>
+                        </article>
+                    </div>
+
+                    <!-- Empty State -->
+                    <div th:if="${user.experienceList == null or user.experienceList.isEmpty()}" class="empty-state">
+                        <i class="fas fa-briefcase"></i>
+                        <p>No experience information added yet.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+</div><!-- End .page-wrapper -->
+
+<!-- JavaScript for Toggle Functionality -->
+<script src="/js/profile.js"></script>
+</body>
+</html>

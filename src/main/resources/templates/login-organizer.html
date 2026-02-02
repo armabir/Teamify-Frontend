@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organizer Login | Teamify</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- THEME VARIABLES --- */
+        :root {
+            --bg-color: #030305;
+            --glass-bg: rgba(10, 10, 12, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-main: #ffffff;
+            --text-muted: #9ca3af;
+            --accent-cyan: #22d3ee;
+            --accent-violet: #8b5cf6;
+            --input-bg: rgba(0, 0, 0, 0.3);
+        }
+
+        /* --- RESET & BASE --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        h1, h2, h3, .brand-font { font-family: 'Space Grotesk', sans-serif; }
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+
+        /* --- ANIMATED BACKGROUND --- */
+        .background-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.4;
+            animation: float 10s ease-in-out infinite;
+        }
+        .blob-1 { top: -10%; left: -10%; width: 500px; height: 500px; background: var(--accent-violet); }
+        .blob-2 { bottom: -10%; right: -10%; width: 400px; height: 400px; background: var(--accent-cyan); animation-delay: 2s; }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(30px, -30px); }
+        }
+
+        /* --- GLASS LOGIN CARD --- */
+        .login-card {
+            width: 100%;
+            max-width: 420px;
+            padding: 3rem 2.5rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            position: relative;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .login-header h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -1px;
+        }
+
+        .login-header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* --- FORM ELEMENTS --- */
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            transition: color 0.3s;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 14px 14px 45px; /* Space for icon */
+            background: var(--input-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-cyan);
+            background: rgba(0,0,0,0.5);
+            box-shadow: 0 0 0 4px rgba(34, 211, 238, 0.1);
+        }
+
+        .form-control:focus + i {
+            color: var(--accent-cyan);
+        }
+
+        /* --- BUTTONS --- */
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            margin-top: 1rem;
+            background: linear-gradient(135deg, var(--accent-cyan), #0ea5e9);
+            border: none;
+            border-radius: 12px;
+            color: #000;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(34, 211, 238, 0.4);
+        }
+
+        .switch-link {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .switch-link a {
+            color: var(--accent-cyan);
+            font-weight: 600;
+        }
+        .switch-link a:hover {
+            text-decoration: underline;
+            text-underline-offset: 4px;
+        }
+
+        /* --- ALERTS --- */
+        .alert-error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="background-blob blob-1"></div>
+<div class="background-blob blob-2"></div>
+
+<div class="login-card">
+
+    <div class="login-header">
+        <h2 class="brand-font">Partner Login</h2>
+        <p>Welcome back to <span style="color: var(--accent-cyan);">Teamify</span>.</p>
+    </div>
+
+    <div th:if="${param.error}" class="alert-error">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span>Invalid email or password.</span>
+    </div>
+
+    <div th:if="${param.logout}" class="alert-error" style="border-color: var(--accent-cyan); color: var(--accent-cyan); background: rgba(34, 211, 238, 0.1);">
+        <i class="fa-solid fa-check-circle"></i>
+        <span>Logged out successfully.</span>
+    </div>
+
+    <form th:action="@{/organizer/login}" method="POST">
+
+        <div class="form-group">
+            <label for="username">Organization Email</label>
+            <div class="input-wrapper">
+                <input type="text" id="username" name="username" class="form-control" placeholder="contact@org.com" required autofocus>
+                <i class="fa-regular fa-envelope"></i>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <div class="input-wrapper">
+                <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required>
+                <i class="fa-solid fa-lock"></i>
+            </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; font-size: 0.85rem; color: var(--text-muted);">
+            <label style="display: flex; gap: 8px; cursor: pointer; margin: 0; color: inherit;">
+                <input type="checkbox" name="remember-me"> Remember me
+            </label>
+            <a href="#" style="color: var(--text-muted); hover: color: #fff;">Forgot Password?</a>
+        </div>
+
+        <button type="submit" class="btn-submit">
+            Access Dashboard <i class="fa-solid fa-arrow-right" style="margin-left: 8px;"></i>
+        </button>
+    </form>
+
+    <div class="switch-link">
+        <p>New partner? <a th:href="@{/organizer/signup}">Register Organization</a></p>
+        <p style="margin-top: 8px; font-size: 0.8rem; opacity: 0.7;">
+            Are you a student? <a th:href="@{/login}" style="color: #fff;">Student Login</a>
+        </p>
+    </div>
+</div>
+
+</body>
+</html>

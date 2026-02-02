@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discover | Teamify</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/discover.css" th:href="@{/css/discover.css}">
+</head>
+<body>
+
+<aside id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+        <div class="sidebar-logo"><i class="fas fa-users-cog"></i><span class="sidebar-logo-text">Teamify</span></div>
+        <button id="sidebar-close" class="sidebar-close-btn"><i class="fas fa-times"></i></button>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="/profile" class="sidebar-link"><i class="fas fa-user"></i><span>Profile</span></a>
+        <a href="/dashboard" class="sidebar-link"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+        <a href="/discover" class="sidebar-link active"><i class="fas fa-compass"></i><span>Discover</span></a>
+        <a href="/teams" class="sidebar-link"><i class="fas fa-users"></i><span>Teams</span></a>
+        <a href="/events" class="sidebar-link"><i class="fas fa-calendar-alt"></i><span>Events</span></a>
+    </nav>
+    <div class="sidebar-footer">
+        <a href="/signout" class="sidebar-link logout-link"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+    </div>
+</aside>
+
+<button id="sidebar-toggle" class="sidebar-toggle-btn"><i class="fas fa-bars"></i></button>
+<div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+<div class="page-wrapper">
+    <main class="main-content">
+        <header class="discover-header">
+            <div class="header-text">
+                <h1>Explore the <span class="text-highlight">Network</span></h1>
+                <p>Connect with developers, join projects, and build the future.</p>
+            </div>
+            <div class="search-bar-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="searchInput" placeholder="Search people, skills, or teams..." class="glass-input">
+                <button class="btn-primary" onclick="filterContent()">Search</button>
+            </div>
+            <div class="filters">
+                <button class="filter-tag active" onclick="filterType('all')">All</button>
+                <button class="filter-tag" onclick="filterType('user')">Developers</button>
+                <button class="filter-tag" onclick="filterType('team')">Teams</button>
+            </div>
+        </header>
+
+        <section class="content-section" id="usersSection">
+            <div class="section-title">
+                <h2><i class="fas fa-code"></i> Top Talent</h2>
+                <a href="#" class="view-all">View All</a>
+            </div>
+            <div class="card-grid" id="userGrid">
+                <div class="glass-card user-card" th:each="user : ${users}"
+                     th:data-search-terms="${#strings.toLowerCase((user.firstName ?: '') + ' ' + (user.lastName ?: '') + ' ' + (user.userName ?: '')) + ' ' + (user.skills != null ? #strings.toLowerCase(#strings.listJoin(user.skills.![name], ' ')) : '')}">
+                    <div class="card-banner"></div>
+                    <div class="card-avatar">
+                        <img th:if="${user.profilePictureUrl != null and !#strings.isEmpty(user.profilePictureUrl)}"
+                             th:src="${user.profilePictureUrl}" style="width: 70px; height: 70px; border-radius: 50%; border: 4px solid var(--card-bg); object-fit: cover;">
+                        <div th:unless="${user.profilePictureUrl != null and !#strings.isEmpty(user.profilePictureUrl)}"
+                             class="avatar-placeholder bg-purple-600">
+                            <span th:text="${user.firstName != null ? user.firstName.substring(0, 1) : 'U'}">U</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h3 th:text="${(user.firstName ?: '') + ' ' + (user.lastName ?: '')}">User Name</h3>
+                        <span class="username" th:text="'@' + ${user.userName}">@username</span>
+                        <p class="role" th:text="${user.bio ?: 'No bio available'}">Developer</p>
+                        <div class="skills-container">
+                            <div th:if="${user.skills != null}">
+                                <span class="skill-pill" th:each="skill : ${user.skills}" th:text="${skill.name}">Java</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <a th:href="'mailto:' + ${user.email}" class="btn-icon" title="Send Email"><i class="far fa-envelope"></i></a>
+                        <div class="card-actions">
+                            <button class="btn-outline-disabled" disabled>Connect</button>
+                            <a th:href="@{/profile(view=${user.userName})}" class="btn-gradient-sm">View Profile</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section" id="teamsSection">
+            <div class="section-title">
+                <h2><i class="fas fa-users"></i> Teams</h2>
+            </div>
+
+            <div class="card-grid" id="teamGrid">
+                <div class="glass-card team-card" th:each="team : ${teams}"
+                     th:data-search-terms="${#strings.toLowerCase((team.name ?: '') + ' ' + (team.goal ?: '') + ' ' + (team.description ?: ''))}">
+
+                    <div class="card-banner team-banner"
+                         th:style="${team.coverImageUrl != null ? 'background-image: url(' + team.coverImageUrl + ');' : ''}">
+<!--                        <span class="role-badge" th:text="${team.createdBy == #session.getAttribute('loggedUser') ? 'Admin' : 'Member'}">Admin</span>-->
+                    </div>
+
+                    <div class="card-body">
+                        <h3 th:text="${team.name}">Team Name</h3>
+
+                        <div class="team-goal-row">
+                            <i class="fas fa-bullseye"></i>
+                            <span th:text="${team.goal ?: 'No Goal Set'}">Creating a Go Cart</span>
+                        </div>
+
+                        <p class="project-desc"
+                           th:text="${#strings.length(team.description) > 80 ? #strings.substring(team.description,0,80) + '...' : team.description}">
+                            Set the hour, minute, and second...
+                        </p>
+                    </div>
+
+                    <div class="card-footer team-footer">
+                        <div class="member-info">
+                            <span class="member-count-circle" th:text="${team.memberUsernames != null ? team.memberUsernames.size() : 0}">3</span>
+                            <span class="member-label" th:text="${(team.memberUsernames != null ? team.memberUsernames.size() : 0) + ' Members'}">3 Members</span>
+                        </div>
+
+                        <a th:href="@{/manage-team(view=${team.name})}" class="view-team-link">
+                            View Team <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div th:if="${teams == null or teams.empty}" id="noTeamsMsg" class="empty-state">
+                <i class="fas fa-people-group"></i>
+                <h3>No teams yet</h3>
+                <p>Be the first to create a team!</p>
+            </div>
+            <div id="noResultsMsg" style="display: none; text-align: center; padding: 3rem; color: var(--text-secondary);">
+                <i class="fas fa-search" style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                <p>No matches found.</p>
+            </div>
+        </section>
+
+    </main>
+</div>
+<script src="/js/discover.js" th:src="@{/js/discover.js}"></script>
+</body>
+</html>

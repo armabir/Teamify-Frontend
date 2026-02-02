@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teamify for Organizers - Register</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/signup.css">
+    <link rel="stylesheet" href="/css/signup-organizer.css"> </head>
+<body>
+
+<div class="background-shape shape-1"></div>
+<div class="background-shape shape-2"></div>
+
+<div class="toast-container">
+    <div th:if="${param.error}" class="toast toast-error">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <div class="toast-content">
+            <span class="toast-title">Registration Failed</span>
+            <span class="toast-msg" th:text="${param.message}">Error details here.</span>
+        </div>
+        <button class="toast-close" onclick="this.parentElement.remove()">&times;</button>
+    </div>
+</div>
+
+<div class="container">
+    <div class="glass-card organizer-card">
+        <div class="header-section">
+            <h2>Partner with Teamify</h2>
+            <p>Host events, find talent, and build the future.</p>
+        </div>
+
+        <form th:action="@{/organizer/signup}" th:object="${organizerDto}" method="POST" enctype="multipart/form-data" id="orgRegistrationForm">
+
+            <div class="input-group">
+                <label for="name">Organization Name</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-building"></i>
+                    <input type="text" id="name" th:field="*{name}" placeholder="Acme Inc. / State University" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="input-group">
+                    <label for="type">Type</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-briefcase"></i>
+                        <select id="type" th:field="*{type}" required class="glass-select">
+                            <option value="" disabled selected>Select Type</option>
+                            <option value="UNIVERSITY">University</option>
+                            <option value="STUDENT_CLUB">Student Club</option>
+                            <option value="CORPORATE">Company</option>
+                            <option value="NON_PROFIT">Non-Profit</option>
+                            <option value="INCUBATOR">Incubator</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="websiteUrl">Website</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-globe"></i>
+                        <input type="url" id="websiteUrl" th:field="*{websiteUrl}" placeholder="https://..." required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="email">Official Email</label>
+                <div class="input-wrapper">
+                    <i class="fa-regular fa-envelope"></i>
+                    <input type="email" id="email" th:field="*{email}" placeholder="contact@organization.com" required>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="password">Password</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="password" th:field="*{password}" placeholder="••••••••" required>
+                </div>
+                <div class="password-strength-container">
+                    <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+                    <span id="strengthText">Weak</span>
+                </div>
+                <ul class="strength-requirements">
+                    <li id="req-length"><i class="fa-solid fa-circle"></i> 8+ Chars</li>
+                    <li id="req-num"><i class="fa-solid fa-circle"></i> Number</li>
+                    <li id="req-special"><i class="fa-solid fa-circle"></i> Symbol</li>
+                </ul>
+            </div>
+
+            <div class="input-group">
+                <label>Organization Logo</label>
+                <div class="file-upload-wrapper" id="dropZone">
+                    <input type="file" id="logoFile" name="logoFile" accept="image/*" hidden>
+                    <div class="upload-content">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <span id="fileName">Click or Drag to Upload Logo</span>
+                    </div>
+                    <img id="logoPreview" src="#" alt="Preview" class="hidden">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="description">Short Bio</label>
+                <div class="input-wrapper">
+                    <textarea id="description" th:field="*{description}" rows="3" placeholder="Tell students about your mission..." class="glass-textarea"></textarea>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                Register Organization <i class="fa-solid fa-arrow-right"></i>
+            </button>
+
+            <p class="login-link">Looking for a student account? <a th:href="@{/signup}">Student Sign Up</a></p>
+        </form>
+    </div>
+</div>
+
+<script src="/js/signup.js"></script> <script src="/js/signup-organizer.js"></script> </body>
+</html>

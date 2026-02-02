@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Teamify</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="/css/dashboard.css" th:href="@{/css/dashboard.css}">
+</head>
+<body>
+
+<div class="ambient-glow glow-1"></div>
+<div class="ambient-glow glow-2"></div>
+
+<aside id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+        <div class="sidebar-logo">
+            <span class="logo-text">Team<span class="text-highlight">ify</span>.</span>
+        </div>
+        <button id="sidebar-close" class="sidebar-close-btn"><i class="fas fa-times"></i></button>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="/profile" class="sidebar-link"><i class="fas fa-user"></i><span>Profile</span></a>
+        <a href="/dashboard" class="sidebar-link active"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+        <a href="/discover" class="sidebar-link"><i class="fas fa-compass"></i><span>Discover</span></a>
+        <a href="/teams" class="sidebar-link"><i class="fas fa-users"></i><span>Teams</span></a>
+        <a href="/events" class="sidebar-link"><i class="fas fa-calendar-alt"></i><span>Events</span></a>
+    </nav>
+    <div class="sidebar-footer">
+        <a href="/signout" class="sidebar-link logout-link"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+    </div>
+</aside>
+
+<button id="sidebar-toggle" class="sidebar-toggle-btn"><i class="fas fa-bars"></i></button>
+<div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+<div class="page-wrapper">
+    <main class="main-content">
+
+        <header class="dashboard-header">
+            <div>
+                <h1 class="greeting">Hello, <span class="text-gradient" th:text="${user.firstName}">Developer</span></h1>
+                <p class="subtitle">Here's what's happening in your network today.</p>
+            </div>
+            <div class="header-actions">
+                <span class="date-badge"><i class="far fa-calendar"></i> <span id="currentDate">Today</span></span>
+                <a href="/teams" class="btn-create"><i class="fas fa-plus"></i> New Team</a>
+            </div>
+        </header>
+
+        <div class="bento-grid">
+
+            <div class="bento-card profile-summary">
+                <div class="profile-mini">
+                    <img th:if="${user.profilePictureUrl != null}" th:src="${user.profilePictureUrl}" class="pfp-small">
+                    <div th:unless="${user.profilePictureUrl != null}" class="pfp-fallback">
+                        <span th:text="${#strings.substring(user.firstName,0,1)}">U</span>
+                    </div>
+                    <div class="profile-text">
+                        <h3 th:text="${user.firstName + ' ' + user.lastName}">User Name</h3>
+                        <span class="role-badge" th:text="${user.skills != null and !user.skills.isEmpty() ? user.skills[0].name : 'Developer'}">Role</span>
+                    </div>
+                </div>
+
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <span class="stat-num" th:text="${teams != null ? teams.size() : 0}">0</span>
+                        <span class="stat-label">Teams</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-num" th:text="${user.projectList != null ? user.projectList.size() : 0}">0</span>
+                        <span class="stat-label">Projects</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-num" th:text="${user.skills != null ? user.skills.size() : 0}">0</span>
+                        <span class="stat-label">Skills</span>
+                    </div>
+                </div>
+
+                <a href="/profile" class="btn-profile-link">Edit Profile</a>
+            </div>
+
+            <div class="bento-card active-teams">
+                <div class="card-header">
+                    <h2><i class="fas fa-rocket"></i> Your Squads</h2>
+                    <a href="/teams" class="link-arrow">View All</a>
+                </div>
+
+                <div class="teams-mini-list" th:if="${teams != null and !teams.isEmpty()}">
+                    <div class="team-mini-item" th:each="team : ${teams}">
+                        <div class="team-icon" th:style="${team.coverImageUrl != null ? 'background-image: url(' + team.coverImageUrl + ')' : ''}">
+                            <span th:if="${team.coverImageUrl == null}" th:text="${#strings.substring(team.name,0,1)}">T</span>
+                        </div>
+                        <div class="team-info">
+                            <h4 th:text="${team.name}">Team Name</h4>
+                            <span class="team-role" th:text="${team.createdBy == user.userName ? 'Owner' : 'Member'}">Member</span>
+                        </div>
+                        <a th:href="@{/manage-team(view=${team.name})}" class="btn-icon-go"><i class="fas fa-chevron-right"></i></a>
+                    </div>
+                </div>
+
+                <div class="empty-mini" th:if="${teams == null or teams.isEmpty()}">
+                    <i class="fas fa-users-slash"></i>
+                    <p>You haven't joined any teams yet.</p>
+                    <a href="/discover" class="text-cyan">Find a team</a>
+                </div>
+            </div>
+
+            <div class="bento-card activity-feed-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-bell"></i> Updates</h2>
+                </div>
+
+                <div class="activity-list">
+                    <div class="activity-item">
+                        <div class="activity-icon cyan"><i class="fas fa-code-branch"></i></div>
+                        <div class="activity-content">
+                            <p><strong>System</strong>: Welcome to Teamify v2.0.</p>
+                            <span class="time-ago">Just now</span>
+                        </div>
+                    </div>
+
+                    <div class="empty-mini" th:if="${true}"> <p style="opacity: 0.5; font-size: 0.9rem;">No new notifications.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bento-card quick-actions">
+                <div class="card-header">
+                    <h2>Quick Actions</h2>
+                </div>
+                <div class="action-grid">
+                    <a href="/discover" class="action-btn">
+                        <i class="fas fa-search"></i>
+                        <span>Find Talent</span>
+                    </a>
+                    <a href="/teams" class="action-btn">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>Create Team</span>
+                    </a>
+                    <a href="/profile" class="action-btn">
+                        <i class="fas fa-pen-fancy"></i>
+                        <span>Update Skills</span>
+                    </a>
+                    <a href="/events" class="action-btn">
+                        <i class="fas fa-calendar-check"></i>
+                        <span>Events</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="bento-card suggestion-card">
+                <div class="glow-spotlight"></div>
+                <h3>Level Up</h3>
+                <p>Complete your profile to get 3x more visibility in the Discover algorithm.</p>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 70%"></div>
+                </div>
+                <span class="progress-text">70% Complete</span>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<script>
+    // Sidebar Logic
+    const toggleBtn = document.getElementById('sidebar-toggle');
+    const closeBtn = document.getElementById('sidebar-close');
+    const body = document.body;
+    const overlay = document.getElementById('sidebar-overlay');
+
+    function toggleSidebar() {
+        body.classList.toggle('sidebar-open');
+    }
+    function closeSidebar() {
+        body.classList.remove('sidebar-open');
+    }
+
+    if(toggleBtn) toggleBtn.addEventListener('click', toggleSidebar);
+    if(closeBtn) closeBtn.addEventListener('click', closeSidebar);
+    if(overlay) overlay.addEventListener('click', closeSidebar);
+
+    // Date
+    const dateOptions = { weekday: 'long', month: 'short', day: 'numeric' };
+    document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', dateOptions);
+</script>
+</body>
+</html>

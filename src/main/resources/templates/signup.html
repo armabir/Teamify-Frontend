@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join Teamify - Sign Up</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="/css/signup.css">
+</head>
+<body>
+
+<div class="background-shape shape-1"></div>
+<div class="background-shape shape-2"></div>
+
+<div class="toast-container">
+    <div th:if="${param.username}" class="toast toast-error">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <div class="toast-content">
+            <span class="toast-title">Username Taken</span>
+            <span class="toast-msg">This username is already registered.</span>
+        </div>
+        <button class="toast-close" onclick="this.parentElement.remove()">&times;</button>
+    </div>
+
+    <div th:if="${param.email}" class="toast toast-error">
+        <i class="fa-solid fa-envelope-circle-check"></i>
+        <div class="toast-content">
+            <span class="toast-title">Email Exists</span>
+            <span class="toast-msg">This email is already associated with an account.</span>
+        </div>
+        <button class="toast-close" onclick="this.parentElement.remove()">&times;</button>
+    </div>
+</div>
+
+<div class="container">
+    <div class="glass-card">
+        <div class="header-section">
+            <h2>Create Account</h2>
+            <p>Join the future of Teamify.</p>
+        </div>
+
+        <form th:action="@{/signup}" th:object="${userDto}" method="POST" id="registrationForm">
+
+            <div class="form-row">
+                <div class="input-group">
+                    <label for="firstName">First Name</label>
+                    <div class="input-wrapper">
+                        <i class="fa-regular fa-user"></i>
+                        <input type="text" id="firstName" th:field="*{firstName}" placeholder="Alex" required>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="lastName">Last Name</label>
+                    <div class="input-wrapper">
+                        <i class="fa-regular fa-user"></i>
+                        <input type="text" id="lastName" th:field="*{lastName}" placeholder="Rivera" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="username">Username</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-at"></i>
+                    <input type="text" id="username" th:field="*{username}" placeholder="alexrivera.dev" required>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="email">Email Address</label>
+                <div class="input-wrapper">
+                    <i class="fa-regular fa-envelope"></i>
+                    <input type="email" id="email" th:field="*{email}" placeholder="alex@mit.edu" required>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="password">Password</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="password" th:field="*{password}" placeholder="••••••••" required>
+                </div>
+
+                <div class="password-strength-container">
+                    <div class="strength-bar">
+                        <div class="strength-fill" id="strengthFill"></div>
+                    </div>
+                    <span id="strengthText">Weak</span>
+                </div>
+                <ul class="strength-requirements">
+                    <li id="req-length"><i class="fa-solid fa-circle"></i> 8+ Characters</li>
+                    <li id="req-upper"><i class="fa-solid fa-circle"></i> Uppercase</li>
+                    <li id="req-lower"><i class="fa-solid fa-circle"></i> Lowercase</li>
+                    <li id="req-num"><i class="fa-solid fa-circle"></i> Number</li>
+                    <li id="req-special"><i class="fa-solid fa-circle"></i> Symbol</li>
+                </ul>
+            </div>
+
+            <div class="input-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="confirmPassword" name="confirmPassword" placeholder="••••••••" required>
+                    <i class="fa-solid fa-check match-icon" id="matchIcon"></i>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                Sign Up <i class="fa-solid fa-arrow-right"></i>
+            </button>
+
+            <p class="login-link">Already a member? <a th:href="@{/login}">Log In</a></p>
+        </form>
+    </div>
+</div>
+
+<script src="/js/signup.js"></script>
+
+
+</body>
+</html>

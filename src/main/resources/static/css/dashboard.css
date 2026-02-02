@@ -1,0 +1,294 @@
+/* ========================================
+   1. GLOBAL RESET & VARIABLES
+   ======================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* Color Palette - Void / Cyan Theme */
+    --bg-primary: #030305;
+    --bg-secondary: #0a0a0c;
+
+    /* Glassmorphism */
+    --card-bg: rgba(10, 10, 12, 0.6);
+    --card-border: rgba(255, 255, 255, 0.08);
+    --card-hover-border: rgba(34, 211, 238, 0.3);
+
+    /* Text */
+    --text-primary: #ffffff;
+    --text-secondary: #94a3b8;
+    --text-tertiary: #64748b;
+
+    /* Accents */
+    --accent-cyan: #22d3ee;
+    --accent-violet: #8b5cf6;
+
+    /* Dimensions */
+    --sidebar-width: 260px;
+    --radius-lg: 24px;
+    --radius-md: 12px;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+h1, h2, h3, .logo-text, .stat-num {
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+/* --- AMBIENT GLOW --- */
+.ambient-glow {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(100px);
+    z-index: -1;
+    opacity: 0.3;
+    pointer-events: none;
+}
+.glow-1 {
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, #312e81 0%, transparent 70%);
+    top: -200px; left: -100px;
+}
+.glow-2 {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, #164e63 0%, transparent 70%);
+    bottom: -100px; right: -100px;
+}
+
+/* ========================================
+   2. SIDEBAR (Identical to Discover)
+   ======================================== */
+.sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    width: var(--sidebar-width); height: 100vh;
+    background: rgba(3, 3, 5, 0.8);
+    backdrop-filter: blur(12px);
+    border-right: 1px solid var(--card-border);
+    z-index: 1000;
+    display: flex; flex-direction: column;
+    transition: transform 0.3s ease;
+}
+
+.sidebar-header { padding: 1.5rem; border-bottom: 1px solid var(--card-border); display: flex; justify-content: space-between; align-items: center; }
+.logo-text { font-size: 1.5rem; font-weight: 700; }
+.text-highlight { color: var(--accent-cyan); }
+.sidebar-nav { flex: 1; padding: 1rem 0; }
+.sidebar-link {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 1rem 1.5rem; color: var(--text-secondary);
+    text-decoration: none; transition: 0.2s;
+    font-weight: 500; border-left: 3px solid transparent;
+}
+.sidebar-link:hover, .sidebar-link.active {
+    background: rgba(34, 211, 238, 0.05);
+    color: var(--text-primary);
+    border-left-color: var(--accent-cyan);
+}
+.sidebar-link i { width: 24px; text-align: center; }
+.sidebar-footer { border-top: 1px solid var(--card-border); padding: 1rem; }
+.sidebar-close-btn { background: none; border: none; color: #fff; font-size: 1.2rem; display: none; cursor: pointer; }
+
+/* Toggle Button */
+.sidebar-toggle-btn {
+    position: fixed; top: 1rem; left: 1rem;
+    background: var(--bg-secondary); border: 1px solid var(--card-border);
+    color: white; padding: 0.75rem; border-radius: 8px;
+    z-index: 900; opacity: 0; pointer-events: none; transition: 0.3s;
+}
+
+@media (max-width: 991px) {
+    .sidebar { transform: translateX(-100%); }
+    .sidebar-toggle-btn { opacity: 1; pointer-events: auto; }
+    body.sidebar-open .sidebar { transform: translateX(0); }
+    .sidebar-close-btn { display: block; }
+    .page-wrapper { margin-left: 0 !important; }
+}
+
+/* ========================================
+   3. MAIN LAYOUT
+   ======================================== */
+.page-wrapper {
+    margin-left: var(--sidebar-width);
+    padding: 2rem;
+    min-height: 100vh;
+}
+
+.main-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-top: 2rem; /* Mobile spacing */
+}
+
+/* Header */
+.dashboard-header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    margin-bottom: 2rem;
+    flex-wrap: wrap; gap: 1rem;
+}
+.greeting { font-size: 2.5rem; font-weight: 700; line-height: 1.1; margin-bottom: 0.5rem; }
+.text-gradient {
+    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.subtitle { color: var(--text-secondary); font-size: 1rem; }
+
+.header-actions { display: flex; align-items: center; gap: 1rem; }
+.date-badge {
+    background: rgba(255,255,255,0.05);
+    padding: 8px 16px; border-radius: 20px;
+    font-size: 0.9rem; color: var(--text-secondary);
+    border: 1px solid var(--card-border);
+}
+.btn-create {
+    background: var(--accent-cyan); color: #000;
+    padding: 10px 20px; border-radius: 20px;
+    text-decoration: none; font-weight: 600; font-size: 0.9rem;
+    transition: 0.3s; box-shadow: 0 0 15px rgba(34, 211, 238, 0.3);
+}
+.btn-create:hover { transform: translateY(-2px); box-shadow: 0 0 25px rgba(34, 211, 238, 0.5); }
+
+/* ========================================
+   4. BENTO GRID
+   ======================================== */
+.bento-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: auto auto;
+    gap: 1.5rem;
+}
+
+/* Card Base */
+.bento-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    display: flex; flex-direction: column;
+    position: relative; overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s;
+}
+.bento-card:hover { border-color: var(--card-hover-border); transform: translateY(-2px); }
+
+.card-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 1.25rem;
+}
+.card-header h2 { font-size: 1.25rem; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+.card-header h2 i { color: var(--accent-cyan); }
+
+/* --- 1. Profile Summary (Top Left) --- */
+.profile-summary { grid-column: span 1; }
+.profile-mini { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+.pfp-small, .pfp-fallback {
+    width: 50px; height: 50px; border-radius: 50%;
+    object-fit: cover; border: 2px solid var(--card-border);
+}
+.pfp-fallback {
+    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet));
+    display: flex; justify-content: center; align-items: center;
+    font-weight: bold; color: black;
+}
+.profile-text h3 { font-size: 1.1rem; color: #fff; margin-bottom: 2px; }
+.role-badge { font-size: 0.8rem; color: var(--text-secondary); background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 4px; }
+
+.stats-row { display: flex; justify-content: space-between; margin-bottom: 1.5rem; background: rgba(0,0,0,0.2); padding: 1rem; border-radius: var(--radius-md); }
+.stat-item { text-align: center; }
+.stat-num { display: block; font-size: 1.5rem; font-weight: 700; color: var(--text-primary); }
+.stat-label { font-size: 0.75rem; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px; }
+
+.btn-profile-link {
+    text-align: center; padding: 10px; border-radius: var(--radius-md);
+    border: 1px solid var(--card-border); color: var(--text-secondary);
+    text-decoration: none; font-size: 0.9rem; transition: 0.2s;
+    margin-top: auto;
+}
+.btn-profile-link:hover { border-color: var(--accent-violet); color: var(--accent-violet); }
+
+/* --- 2. Active Teams (Top Center/Right - Spans 2 cols) --- */
+.active-teams { grid-column: span 2; }
+.link-arrow { color: var(--accent-cyan); font-size: 0.9rem; text-decoration: none; }
+
+.teams-mini-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+.team-mini-item {
+    background: rgba(255,255,255,0.03); border: 1px solid var(--card-border);
+    padding: 1rem; border-radius: var(--radius-md);
+    display: flex; align-items: center; gap: 1rem;
+    transition: 0.2s;
+}
+.team-mini-item:hover { background: rgba(255,255,255,0.06); border-color: var(--accent-cyan); }
+
+.team-icon {
+    width: 40px; height: 40px; background: #2d2a3d; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--accent-cyan); font-weight: bold; background-size: cover; background-position: center;
+}
+.team-info h4 { font-size: 0.95rem; margin-bottom: 2px; }
+.team-role { font-size: 0.75rem; color: var(--text-tertiary); }
+.btn-icon-go { margin-left: auto; color: var(--text-secondary); }
+
+/* --- 3. Activity Feed (Bottom Left) --- */
+.activity-feed-card { grid-column: span 1; min-height: 300px; }
+.activity-list { display: flex; flex-direction: column; gap: 1.25rem; }
+.activity-item { display: flex; gap: 1rem; align-items: flex-start; }
+.activity-icon {
+    min-width: 32px; height: 32px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem; border: 1px solid var(--card-border);
+}
+.activity-icon.cyan { background: rgba(34, 211, 238, 0.1); color: var(--accent-cyan); }
+.activity-icon.violet { background: rgba(139, 92, 246, 0.1); color: var(--accent-violet); }
+
+.activity-content p { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.4; margin-bottom: 4px; }
+.time-ago { font-size: 0.75rem; color: var(--text-tertiary); display: block; }
+
+/* --- 4. Quick Actions (Bottom Center) --- */
+.quick-actions { grid-column: span 1; }
+.action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.action-btn {
+    background: rgba(255,255,255,0.03); border: 1px solid var(--card-border);
+    padding: 1.5rem 1rem; border-radius: var(--radius-md);
+    text-align: center; text-decoration: none; color: var(--text-secondary);
+    transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 10px;
+}
+.action-btn i { font-size: 1.5rem; margin-bottom: 5px; color: var(--text-primary); transition: 0.2s; }
+.action-btn:hover { background: rgba(34, 211, 238, 0.05); border-color: var(--accent-cyan); color: #fff; }
+.action-btn:hover i { color: var(--accent-cyan); transform: scale(1.1); }
+
+/* --- 5. Suggestion / Promo (Bottom Right) --- */
+.suggestion-card {
+    grid-column: span 1;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(3, 3, 5, 0.6) 100%);
+    border-color: rgba(139, 92, 246, 0.2);
+}
+.suggestion-card h3 { color: var(--accent-violet); margin-bottom: 0.5rem; }
+.suggestion-card p { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem; }
+.progress-bar { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; margin-bottom: 0.5rem; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--accent-violet); border-radius: 10px; }
+.progress-text { font-size: 0.8rem; color: var(--text-tertiary); display: block; text-align: right; }
+
+/* --- Responsive Layout --- */
+@media (max-width: 1100px) {
+    .bento-grid { grid-template-columns: 1fr 1fr; }
+    .active-teams { grid-column: span 2; }
+    .profile-summary { grid-column: span 2; } /* Make full width on tablet */
+    .profile-summary .stats-row { justify-content: space-around; }
+}
+
+@media (max-width: 768px) {
+    .bento-grid { grid-template-columns: 1fr; }
+    .active-teams, .profile-summary, .activity-feed-card, .quick-actions, .suggestion-card { grid-column: span 1; }
+    .dashboard-header { flex-direction: column; align-items: flex-start; }
+    .header-actions { width: 100%; justify-content: space-between; margin-top: 10px; }
+}

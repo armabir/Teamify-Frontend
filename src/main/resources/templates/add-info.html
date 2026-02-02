@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teamify - Complete Profile</title>
+    <link rel="stylesheet" th:href="@{/css/add-info.css}">
+</head>
+<body>
+
+<div class="glow-effect"></div>
+<div class="glow-effect-2"></div>
+
+<div class="form-container">
+    <div class="header">
+        <h2>Let's Get Started</h2>
+        <p>Tell us a bit more about yourself to complete your profile.</p>
+    </div>
+
+    <form th:action="@{/add-info}" th:object="${userDto}" method="POST">
+
+        <div class="form-group">
+            <label for="bio">Bio (Headline)</label>
+            <input type="text" id="bio" th:field="*{bio}" placeholder="e.g. Full Stack Developer" required>
+        </div>
+
+        <div class="form-group">
+            <label for="about">About Me</label>
+            <textarea id="about" th:field="*{about}" placeholder="Share a brief summary of your experience..." required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="location">Location</label>
+            <input type="text" id="location" th:field="*{location}" placeholder="e.g. San Francisco, CA" required>
+        </div>
+
+        <div class="row-split">
+            <div class="form-group">
+                <label for="dateOfBirth">Date of Birth</label>
+                <input type="date" id="dateOfBirth" th:field="*{dateOfBirth}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="gender">Gender</label>
+                <select id="gender" th:field="*{gender}" required>
+                    <option value="" disabled selected>Select</option>
+                    <option value="MALE">Male</option>
+                    <option value="FEMALE">Female</option>
+                    <option value="OTHER">Other</option>
+                </select>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-submit">Save & Continue &rarr;</button>
+
+    </form>
+</div>
+
+</body>
+</html>

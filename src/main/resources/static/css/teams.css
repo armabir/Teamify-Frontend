@@ -1,0 +1,298 @@
+/* ========================================
+   GLOBAL RESET & VARIABLES
+   ======================================== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+    --bg-primary: #0a0a0c;
+    --bg-secondary: #13131a;
+    --card-bg: #15151b;
+    --text-primary: #ffffff;
+    --text-secondary: #9ca3af;
+    --text-tertiary: #6b7280;
+    --text-highlight: #c084fc;
+    --accent-primary: #8b5cf6;
+    --accent-secondary: #ec4899;
+
+    --header-gradient: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+    --accent-gradient: linear-gradient(135deg, #8b5cf6 0%, #d946ef 100%);
+
+    --sidebar-width: 260px;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --radius-sm: 0.5rem;
+    --radius-lg: 1rem;
+    --border-color: #27272a;
+    --transition: 0.3s ease;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg-primary);
+    background-image: radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.08), transparent 25%),
+    radial-gradient(circle at 85% 30%, rgba(236, 72, 153, 0.08), transparent 25%);
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+/* ========================================
+   SIDEBAR (Desktop Default: OPEN)
+   ======================================== */
+.sidebar {
+    position: fixed; top: 0; left: 0;
+    width: var(--sidebar-width); height: 100vh;
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border-color);
+    z-index: 1000;
+    display: flex; flex-direction: column;
+
+    /* DEFAULT STATE: Visible */
+    transform: translateX(0);
+    transition: transform var(--transition);
+}
+
+.page-wrapper {
+    transition: margin-left var(--transition);
+    min-height: 100vh;
+    /* DEFAULT STATE: Pushed right */
+    margin-left: var(--sidebar-width);
+}
+
+/* --- SIDEBAR TOGGLE BUTTON (Hamburger) --- */
+.sidebar-toggle-btn {
+    position: fixed; top: 1rem; left: 1rem; padding: 0.75rem;
+    background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-primary);
+    border-radius: var(--radius-sm); cursor: pointer; z-index: 900;
+    /* HIDDEN by default on Desktop (because sidebar is open) */
+    display: none;
+    align-items: center; justify-content: center;
+}
+.sidebar-toggle-btn:hover { border-color: var(--accent-primary); color: var(--accent-primary); }
+
+/* --- SIDEBAR OVERLAY (Mobile only) --- */
+.sidebar-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px);
+    z-index: 950; display: none;
+}
+
+/* ========================================
+   SIDEBAR CLOSE LOGIC (Desktop vs Mobile)
+   ======================================== */
+
+/* 1. DESKTOP: CLOSED STATE logic */
+@media (min-width: 992px) {
+    /* When 'sidebar-closed' class is added via JS: */
+
+    /* Hide Sidebar */
+    body.sidebar-closed .sidebar {
+        transform: translateX(-100%);
+    }
+
+    /* Reset Margin */
+    body.sidebar-closed .page-wrapper {
+        margin-left: 0;
+    }
+
+    /* SHOW Hamburger so user can open it again */
+    body.sidebar-closed .sidebar-toggle-btn {
+        display: flex;
+    }
+}
+
+/* 2. MOBILE: DEFAULT STATE logic */
+@media (max-width: 991px) {
+    /* Always hide sidebar by default on mobile */
+    .sidebar { transform: translateX(-100%); }
+    .page-wrapper { margin-left: 0; }
+
+    /* Always show hamburger on mobile */
+    .sidebar-toggle-btn { display: flex; }
+
+    /* OPEN STATE (Triggered by 'sidebar-open' class) */
+    body.sidebar-open .sidebar { transform: translateX(0); }
+    body.sidebar-open .sidebar-overlay { display: block; }
+}
+
+/* ========================================
+   SIDEBAR INTERNAL ELEMENTS
+   ======================================== */
+.sidebar-header { padding: var(--spacing-lg); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; }
+.sidebar-logo { display: flex; gap: 0.75rem; font-size: 1.25rem; font-weight: 700; color: var(--text-primary); align-items: center; }
+.sidebar-logo i { color: var(--accent-primary); }
+
+/* Close Button (X) inside sidebar */
+.sidebar-close-btn {
+    background: none; border: none; color: var(--text-secondary);
+    cursor: pointer; font-size: 1.25rem;
+    display: block; /* Visible on Desktop too now */
+    transition: var(--transition);
+}
+.sidebar-close-btn:hover { color: var(--accent-primary); transform: rotate(90deg); }
+
+.sidebar-nav { flex: 1; padding: var(--spacing-md) 0; }
+/* ========================================
+   SIDEBAR UPDATE (Fix Alignment)
+   ======================================== */
+
+.sidebar-link {
+    display: flex;
+    align-items: center; /* <--- THIS IS THE KEY FIX */
+    gap: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-lg);
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    transition: 0.2s ease;
+}
+
+/* Add this new rule to stabilize the icons */
+.sidebar-link i {
+    width: 24px; /* Fixed width ensures all text starts at the same point */
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebar-link:hover, .sidebar-link.active {
+    background: rgba(139, 92, 246, 0.1);
+    color: var(--text-primary);
+    border-left-color: var(--accent-primary);
+}
+.sidebar-footer { padding: var(--spacing-md); border-top: 1px solid var(--border-color); }
+
+/* ========================================
+   MAIN CONTENT & HEADER
+   ======================================== */
+.main-content { padding: var(--spacing-lg); max-width: 1400px; margin: 0 auto; padding-top: 2rem; }
+
+@media (max-width: 991px) {
+    .main-content { padding-top: 5rem; } /* Space for hamburger on mobile */
+}
+
+.section-header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;
+}
+.section-header h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.25rem; }
+.text-highlight { color: var(--text-highlight); }
+.section-header p { color: var(--text-secondary); }
+
+.header-actions { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+
+.search-bar-container {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--bg-secondary); border: 1px solid var(--border-color);
+    padding: 0.5rem 1rem; border-radius: var(--radius-sm); width: 300px;
+}
+.search-icon { color: var(--text-secondary); }
+.glass-input {
+    background: transparent; border: none; color: white; width: 100%; outline: none;
+}
+
+.btn-gradient {
+    background: var(--accent-gradient); color: white; border: none;
+    padding: 0.65rem 1.25rem; border-radius: var(--radius-sm); font-weight: 600;
+    cursor: pointer; display: flex; align-items: center; gap: 0.5rem;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3); transition: 0.2s ease;
+}
+.btn-gradient:hover { transform: translateY(-2px); filter: brightness(1.1); }
+
+/* ========================================
+   TEAM CARDS
+   ======================================== */
+.card-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+.team-card {
+    background: var(--card-bg); border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg); overflow: hidden; display: flex; flex-direction: column;
+    transition: 0.2s ease; position: relative;
+}
+.team-card:hover {
+    transform: translateY(-4px); border-color: rgba(139, 92, 246, 0.4);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+
+.card-banner {
+    height: 90px;
+    background: linear-gradient(135deg, #1e1b2e 0%, #2e1065 100%);
+    position: relative;
+}
+
+.card-body { padding: 1.25rem; flex: 1; display: flex; flex-direction: column; }
+
+.team-role-badge {
+    position: absolute; top: 1rem; right: 1rem;
+    background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
+    color: white; font-size: 0.75rem; padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);
+}
+
+.team-title { font-size: 1.2rem; font-weight: 700; color: white; margin-bottom: 0.25rem; }
+.team-goal { font-size: 0.85rem; color: var(--accent-primary); margin-bottom: 0.75rem; font-weight: 500; }
+.team-desc { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 1.5rem; flex: 1; }
+
+.card-footer {
+    padding-top: 1rem; margin-top: auto; border-top: 1px solid var(--border-color);
+    display: flex; justify-content: space-between; align-items: center;
+}
+
+.member-avatars { display: flex; align-items: center; }
+.member-avatars img, .member-avatars .avatar-placeholder {
+    width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--card-bg);
+    margin-left: -8px; object-fit: cover; background: #333;
+}
+.member-avatars .avatar-placeholder {
+    display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: white;
+}
+.member-avatars *:first-child { margin-left: 0; }
+
+.btn-view {
+    color: var(--text-tertiary); font-size: 0.85rem; font-weight: 500;
+    text-decoration: none; transition: 0.2s ease;
+}
+.btn-view:hover { color: var(--text-primary); }
+
+/* Empty State */
+.empty-state {
+    text-align: center; padding: 4rem 2rem;
+    background: var(--card-bg); border: 1px dashed var(--border-color); border-radius: var(--radius-lg);
+}
+.empty-icon { font-size: 2.5rem; color: var(--text-tertiary); margin-bottom: 1rem; opacity: 0.5; }
+
+/* ========================================
+   MODAL
+   ======================================== */
+.modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
+    z-index: 2000; display: none; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity 0.3s ease;
+}
+.modal-overlay.active { display: flex; opacity: 1; }
+
+.modal-content {
+    width: 90%; max-width: 500px; background: #15151b;
+    border: 1px solid var(--border-color); box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    border-radius: var(--radius-lg); animation: slideUp 0.3s ease forwards;
+}
+@keyframes slideUp { from { transform: translateY(20px); } to { transform: translateY(0); } }
+
+.modal-header { padding: 1.25rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; }
+.modal-title { font-weight: 700; color: var(--text-primary); }
+.modal-close { background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 1.2rem; }
+
+form { padding: 1.25rem; }
+.form-group { margin-bottom: 1rem; }
+.form-group label { display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.9rem; }
+.form-input {
+    width: 100%; padding: 0.75rem; background: #1e1b2e; border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm); color: white; outline: none; transition: 0.2s ease;
+}
+.form-input:focus { border-color: var(--accent-primary); box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1); }
+
+.modal-actions { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1.5rem; }
+.btn-cancel { background: transparent; border: 1px solid var(--border-color); color: var(--text-secondary); padding: 0.6rem 1.2rem; border-radius: var(--radius-sm); cursor: pointer; }
+.btn-save { background: var(--accent-gradient); border: none; color: white; padding: 0.6rem 1.5rem; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; }

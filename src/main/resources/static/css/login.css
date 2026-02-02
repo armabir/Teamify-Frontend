@@ -1,0 +1,192 @@
+/* --- Root Variables (Same as Signup for Consistency) --- */
+:root {
+    --bg-color: #0f1115;
+    --card-bg: rgba(23, 25, 30, 0.6);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --primary-gradient: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+    --text-main: #ffffff;
+    --text-muted: #9ca3af;
+    --input-bg: rgba(0, 0, 0, 0.3);
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Outfit', sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+    position: relative;
+}
+
+/* --- Animated Background Blobs --- */
+.background-shape {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    z-index: -1;
+    opacity: 0.5;
+    animation: float 12s infinite ease-in-out;
+}
+.shape-1 { width: 450px; height: 450px; background: #7c3aed; top: -100px; left: -100px; }
+.shape-2 { width: 350px; height: 350px; background: #db2777; bottom: -80px; right: -80px; animation-delay: 2s; }
+
+@keyframes float {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(30px, -30px); }
+}
+
+/* --- Glass Card --- */
+.glass-card {
+    width: 100%;
+    max-width: 420px;
+    padding: 2.5rem;
+    background: var(--card-bg);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    z-index: 1;
+}
+
+.header-section {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+.header-section h2 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+.header-section p { color: var(--text-muted); font-size: 0.95rem; }
+
+/* --- Input Styling --- */
+.input-group { margin-bottom: 1.2rem; }
+label { display: block; margin-bottom: 0.5rem; font-size: 0.85rem; color: var(--text-muted); }
+
+.input-wrapper { position: relative; }
+.input-wrapper i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+}
+
+input[type="text"], input[type="password"], input[type="email"] {
+    width: 100%;
+    background: var(--input-bg);
+    border: 1px solid var(--glass-border);
+    padding: 12px 12px 12px 45px;
+    border-radius: 12px;
+    color: var(--text-main);
+    transition: all 0.3s ease;
+}
+
+input:focus {
+    border-color: #a855f7;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2);
+}
+
+.password-toggle {
+    right: 15px !important;
+    left: auto !important;
+    cursor: pointer;
+}
+
+/* --- Form Actions (Remember & Forgot) --- */
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1.2rem 0;
+    font-size: 0.85rem;
+}
+
+.remember-me {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    color: var(--text-muted);
+}
+
+.remember-me input { margin-right: 8px; accent-color: #a855f7; }
+
+.forgot-link { color: var(--text-muted); text-decoration: none; }
+.forgot-link:hover { color: #ec4899; }
+
+/* --- Buttons --- */
+.btn-submit {
+    width: 100%;
+    padding: 14px;
+    background: var(--primary-gradient);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-bottom: 1.5rem;
+}
+.btn-submit:hover { transform: translateY(-2px); opacity: 0.9; }
+
+/* --- Social Login --- */
+.separator {
+    display: flex;
+    align-items: center;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+.separator::before, .separator::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid var(--glass-border);
+}
+.separator span { padding: 0 10px; }
+
+.social-login { display: flex; gap: 10px; }
+.btn-social {
+    flex: 1;
+    padding: 10px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    transition: 0.3s;
+}
+.btn-social:hover { background: rgba(255,255,255,0.1); }
+
+/* --- Footer Link --- */
+.login-link { text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-muted); }
+.login-link a { color: #a855f7; text-decoration: none; font-weight: 600; }
+
+/* --- Toasts (Minimal version for Login) --- */
+.toast-container { position: fixed; top: 20px; right: 20px; z-index: 999; }
+.toast {
+    padding: 1rem;
+    border-radius: 12px;
+    background: rgba(20, 20, 20, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+}
+.toast-error { border-left: 4px solid var(--danger); }
+.toast-success { border-left: 4px solid var(--success); }

@@ -1,0 +1,399 @@
+/* ========================================
+   GLOBAL RESET & BASE STYLES
+   ======================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* Color Palette - Cyberpunk / Dark Mode Theme */
+    --bg-primary: #0a0a0c;
+    --bg-secondary: #13131a;
+    --card-bg: #15151b;
+    --text-primary: #ffffff;
+    --text-secondary: #9ca3af;
+    --text-tertiary: #6b7280;
+    --text-highlight: #c084fc;
+    --accent-primary: #8b5cf6;
+    --accent-secondary: #ec4899;
+    --header-gradient: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+    --accent-gradient: linear-gradient(135deg, #8b5cf6 0%, #d946ef 100%);
+
+    /* Dimensions & Spacing */
+    --sidebar-width: 260px;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --radius-sm: 0.5rem;
+    --radius-md: 0.75rem;
+    --radius-lg: 1rem;
+    --border-color: #27272a;
+    --transition: 0.2s ease;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg-primary);
+    background-image: radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.08), transparent 25%),
+    radial-gradient(circle at 85% 30%, rgba(236, 72, 153, 0.08), transparent 25%);
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+.page-wrapper {
+    transition: margin-left 0.3s ease;
+    min-height: 100vh;
+    margin-left: 0; /* No margin on mobile when closed */
+}
+
+/* --- Toggle Button (Mobile) --- */
+.sidebar-toggle-btn {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 0.75rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    z-index: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.sidebar-toggle-btn:hover {
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+}
+
+/* --- Mobile Open State (Applied via JS) --- */
+body.sidebar-open .sidebar {
+    transform: translateX(0);
+}
+
+body.sidebar-open .sidebar-overlay {
+    display: block;
+    opacity: 1;
+}
+
+/* Overlay for Mobile */
+.sidebar-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    z-index: 950;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* ========================================
+   DESKTOP RESPONSIVE OVERRIDES
+   ======================================== */
+@media (min-width: 992px) {
+    /* Always show sidebar on desktop */
+    .sidebar {
+        transform: translateX(0);
+    }
+
+    /* Push content to the right */
+    .page-wrapper {
+        margin-left: var(--sidebar-width);
+    }
+
+    /* Hide toggle button and overlay on desktop */
+    .sidebar-toggle-btn {
+        /* ... existing styles ... */
+        background: var(--card-bg); /* Slightly lighter for contrast */
+        box-shadow: 0 4px 12px rgba(0,0,0,0.5); /* Add shadow to lift it up */
+        border: 1px solid var(--accent-primary); /* Add purple border to make it obvious */
+    }
+    .sidebar-overlay {
+        display: none !important;
+    }
+
+    /* Hide the 'X' close button inside sidebar on desktop */
+    .sidebar-close-btn {
+        display: none;
+    }
+
+    /* Reset padding for main content */
+    .main-content {
+        padding-top: var(--spacing-lg);
+    }
+}
+
+/* ========================================
+   SIDEBAR CONTENT
+   ======================================== */
+.sidebar-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.sidebar-logo {
+    display: flex; align-items: center; gap: 0.75rem;
+    font-size: 1.25rem; font-weight: 700; color: var(--text-primary);
+}
+.sidebar-logo i { color: var(--accent-primary); }
+
+.sidebar-close-btn {
+    background: none; border: none;
+    color: var(--text-secondary); font-size: 1.25rem; cursor: pointer;
+}
+
+.sidebar-nav { flex: 1; padding: var(--spacing-md) 0; }
+
+.sidebar-link {
+    display: flex; align-items: center; gap: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-lg);
+    color: var(--text-secondary); text-decoration: none;
+    transition: var(--transition); border-left: 3px solid transparent;
+}
+
+.sidebar-link:hover, .sidebar-link.active {
+    background: rgba(139, 92, 246, 0.1);
+    color: var(--text-primary);
+    border-left-color: var(--accent-primary);
+}
+
+.sidebar-footer { border-top: 1px solid var(--border-color); padding: var(--spacing-md); }
+
+/* ========================================
+   MAIN CONTENT
+   ======================================== */
+.main-content {
+    padding: var(--spacing-lg);
+    max-width: 1400px;
+    margin: 0 auto;
+    padding-top: 4rem; /* Spacer for mobile toggle btn */
+}
+
+.discover-header { margin-bottom: var(--spacing-xl); }
+.discover-header h1 { font-size: 2rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem; }
+.text-highlight { color: var(--text-highlight); }
+.discover-header p { color: var(--text-secondary); margin-bottom: var(--spacing-lg); }
+
+/* Search Bar */
+.search-bar-container {
+    display: flex; gap: 10px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    padding: 0.5rem; border-radius: var(--radius-md);
+    max-width: 600px; align-items: center; margin-bottom: var(--spacing-lg);
+}
+.search-icon { margin-left: 15px; color: var(--text-secondary); }
+.glass-input {
+    background: transparent; border: none; color: var(--text-primary);
+    padding: 10px; flex-grow: 1; font-family: 'Inter', sans-serif; font-size: 1rem; outline: none;
+}
+.glass-input::placeholder { color: var(--text-tertiary); }
+.btn-primary {
+    background: var(--accent-gradient); border: none; color: white;
+    padding: 10px 25px; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer;
+    transition: var(--transition);
+}
+.btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+/* Filters */
+.filters { display: flex; gap: 10px; flex-wrap: wrap; }
+.filter-tag {
+    background: var(--card-bg); border: 1px solid var(--border-color);
+    color: var(--text-secondary); padding: 6px 16px; border-radius: 20px;
+    cursor: pointer; transition: var(--transition); font-size: 0.9rem;
+}
+.filter-tag.active, .filter-tag:hover {
+    border-color: var(--accent-primary); color: var(--text-primary);
+    background: rgba(139, 92, 246, 0.1);
+}
+
+/* Cards */
+.content-section { margin-bottom: var(--spacing-xl); }
+.section-title {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: var(--spacing-md); border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.75rem;
+}
+.section-title h2 { font-size: 1.5rem; display: flex; gap: 10px; align-items: center; color: var(--text-primary); }
+.section-title h2 i { color: var(--accent-primary); }
+.view-all { color: var(--accent-primary); text-decoration: none; font-weight: 600; font-size: 0.9rem; }
+
+.card-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--spacing-md);
+}
+
+.glass-card {
+    background: var(--card-bg); border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg); overflow: hidden;
+    transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+    display: flex; flex-direction: column;
+}
+.glass-card:hover {
+    transform: translateY(-4px); border-color: rgba(139, 92, 246, 0.4);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+
+/* User Card Specifics */
+.card-banner { height: 80px; background: linear-gradient(90deg, #1e1b2e, #13131a); position: relative; }
+.card-avatar { margin-top: -40px; margin-left: 20px; position: relative; }
+.avatar-placeholder {
+    width: 70px; height: 70px; border-radius: 50%; border: 4px solid var(--card-bg);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; font-weight: bold; color: white;
+}
+.bg-purple-600 { background-color: var(--accent-primary); }
+.bg-blue-600 { background-color: #3b82f6; }
+.bg-green-600 { background-color: #10b981; }
+.bg-pink-600 { background-color: var(--accent-secondary); }
+
+.card-body { padding: var(--spacing-md) var(--spacing-lg); flex-grow: 1; }
+.card-body h3 { margin: 0; font-size: 1.1rem; color: var(--text-primary); }
+.username { color: var(--accent-primary); font-size: 0.9rem; display: block; margin-bottom: 5px; }
+.role { color: var(--text-tertiary); font-size: 0.9rem; margin-bottom: 15px; }
+.skills-container { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.skill-pill {
+    background: #1e1b2e; color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.2);
+    font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 20px;
+}
+.card-footer {
+    padding: var(--spacing-md) var(--spacing-lg); border-top: 1px solid var(--border-color);
+    display: flex; justify-content: space-between; align-items: center;
+}
+.btn-outline-sm {
+    background: transparent; border: 1px solid var(--accent-primary);
+    color: var(--accent-primary); padding: 6px 16px; border-radius: var(--radius-sm);
+    cursor: pointer; font-size: 0.85rem; font-weight: 500; transition: var(--transition);
+}
+.btn-outline-sm:hover { background: var(--accent-primary); color: white; }
+.btn-icon {
+    background: transparent; border: 1px solid var(--border-color);
+    color: var(--text-secondary); width: 32px; height: 32px; border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition);
+}
+.btn-icon:hover { border-color: var(--accent-primary); color: var(--accent-primary); background: rgba(139, 92, 246, 0.1); }
+
+/* Project Card Specifics */
+.project-card { padding: var(--spacing-lg); }
+.project-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.project-header h3 { font-size: 1.1rem; color: var(--text-primary); }
+.status-badge {
+    font-size: 0.7rem; background: rgba(6, 182, 212, 0.15); color: #22d3ee;
+    padding: 3px 8px; border-radius: 4px; text-transform: uppercase; font-weight: bold;
+}
+.project-desc { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 15px; line-height: 1.5; flex-grow: 1; }
+.tech-stack { display: flex; gap: 8px; align-items: center; color: var(--text-tertiary); font-size: 0.85rem; margin-bottom: 15px; }
+.tech-stack i { color: var(--accent-primary); }
+.btn-primary-sm {
+    width: 100%; background: #27272a; border: none; color: var(--text-primary);
+    padding: 8px; border-radius: 6px; cursor: pointer; transition: var(--transition);
+    font-size: 0.9rem; font-weight: 500;
+}
+.btn-primary-sm:hover { background: #3f3f46; }
+
+/* ========================================
+   SIDEBAR & LAYOUT LOGIC (Updated)
+   ======================================== */
+.sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    width: var(--sidebar-width); height: 100vh;
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border-color);
+    z-index: 1000;
+    display: flex; flex-direction: column;
+
+    /* HIDDEN BY DEFAULT on all screens */
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+}
+
+.page-wrapper {
+    transition: margin-left 0.3s ease;
+    min-height: 100vh;
+    margin-left: 0; /* Content takes full width by default */
+}
+
+/* --- Toggle Button (Always Visible) --- */
+.sidebar-toggle-btn {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 0.75rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    z-index: 1100; /* Higher than sidebar so it stays on top */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+.sidebar-toggle-btn:hover {
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+}
+
+/* ========================================
+   OPEN STATE LOGIC
+   ======================================== */
+/* When body has 'sidebar-open', show the sidebar */
+body.sidebar-open .sidebar {
+    transform: translateX(0);
+}
+
+/* On Desktop: Push content when sidebar is open */
+@media (min-width: 992px) {
+    body.sidebar-open .page-wrapper {
+        margin-left: var(--sidebar-width);
+    }
+
+    /* Hide the overlay on desktop (we just push content) */
+    .sidebar-overlay {
+        display: none !important;
+    }
+}
+
+/* On Mobile: Use overlay when sidebar is open */
+@media (max-width: 991px) {
+    body.sidebar-open .sidebar-overlay {
+        display: block;
+        opacity: 1;
+    }
+}
+
+/* ========================================
+   DESKTOP RESPONSIVE OVERRIDES
+   ======================================== */
+@media (min-width: 992px) {
+    /* Desktop Logic: Sidebar still hidden by default until toggled */
+
+    /* When open, push content to the right */
+    body.sidebar-open .page-wrapper {
+        margin-left: var(--sidebar-width);
+    }
+
+    /* Hide the overlay on desktop (we interact directly) */
+    .sidebar-overlay {
+        display: none !important;
+    }
+
+    /* NOTE: We removed the rule that hid .sidebar-close-btn
+       so the 'X' will now be visible on desktop. */
+
+    .main-content {
+        padding-top: var(--spacing-lg);
+    }
+}

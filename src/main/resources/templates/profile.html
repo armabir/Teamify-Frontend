@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${user.firstName} + ' - Teamify Profile'">Profile - Teamify</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/profile.css">
+</head>
+<body th:classappend="${param.view != null} ? 'view-mode' : ''">
+
+<aside id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+        <div class="sidebar-logo">
+            <i class="fas fa-users-cog"></i>
+            <span class="sidebar-logo-text">Teamify</span>
+        </div>
+        <button id="sidebar-close" class="sidebar-close-btn"><i class="fas fa-times"></i></button>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="/profile" class="sidebar-link active">
+            <i class="fas fa-user"></i><span>Profile</span>
+        </a>
+        <a href="/dashboard" class="sidebar-link">
+            <i class="fas fa-th-large"></i><span>Dashboard</span>
+        </a>
+
+        <a href="/discover" class="sidebar-link">
+            <i class="fas fa-compass"></i><span>Discover</span>
+        </a>
+
+        <a href="/teams" class="sidebar-link">
+            <i class="fas fa-users"></i><span>Teams</span>
+        </a>
+        <a href="/events" class="sidebar-link">
+            <i class="fas fa-calendar-alt"></i><span>Events</span>
+        </a>
+    </nav>
+    <div class="sidebar-footer">
+        <a href="/signout" class="sidebar-link logout-link">
+            <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+        </a>
+    </div>
+</aside>
+
+<button id="sidebar-toggle" class="sidebar-toggle-btn"><i class="fas fa-bars"></i></button>
+<div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+<div class="page-wrapper">
+
+    <div class="header-wrapper">
+        <header class="glass-card profile-header-card">
+            <div class="header-cover" th:style="${user.coverPictureUrl != null} ? 'background-image: url(' + ${user.coverPictureUrl} + ');' : ''">
+                <div class="header-cover-overlay"></div>
+            </div>
+            <div class="header-content">
+                <div class="header-profile-image">
+                    <img th:if="${user.profilePictureUrl != null}" th:src="${user.profilePictureUrl}" th:alt="${user.firstName}" class="profile-img">
+                    <div th:unless="${user.profilePictureUrl != null}" class="profile-img-fallback">
+                        <i class="fas fa-user"></i>
+                    </div>
+
+                    <button id="btn-edit-pfp" class="pfp-upload-btn" aria-label="Change Profile Picture">
+                        <i class="fas fa-camera"></i>
+                    </button>
+                </div>
+                <div class="header-info">
+                    <h1 class="header-name" th:text="${user.firstName} + ' ' + ${user.lastName}">John Doe</h1>
+                    <p class="header-username">
+                        <span th:text="'@' + ${user.userName}">@johndoe</span>
+                        <i class="fas fa-check-circle verified-badge"></i>
+                    </p>
+                    <p class="header-bio" th:text="${user.bio}" th:if="${user.bio != null}">Full-stack developer.</p>
+                </div>
+            </div>
+        </header>
+    </div>
+
+    <main class="main-content">
+
+        <aside class="left-column">
+            <section class="glass-card about-card hover-effect">
+                <div class="card-header-row">
+                    <h2 class="card-title">About</h2>
+                    <button class="icon-btn" aria-label="Edit About"><i class="fas fa-pen"></i></button>
+                </div>
+                <p class="about-text" th:text="${user.about}">About me...</p>
+                <div class="info-item" th:if="${user.location}">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span th:text="${user.location}">Location</span>
+                </div>
+                <div class="social-links" th:if="${user.socialMediaLinkList != null and !user.socialMediaLinkList.isEmpty()}">
+                    <h3 class="section-subtitle">Connect</h3>
+                    <div class="social-links-container">
+                        <a th:each="link : ${user.socialMediaLinkList}" th:href="${link}" class="social-link" target="_blank">
+                            <i class="fas fa-link"></i> <span th:text="${link}">link</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <section class="glass-card skills-card hover-effect">
+                <div class="card-header-row">
+                    <h2 class="card-title">Skills</h2>
+                    <button id="btn-edit-skills" class="icon-btn" aria-label="Edit Skills">
+                        <i class="fas fa-pen"></i>
+                    </button>
+                </div>
+                <div class="tags-container" th:if="${user.skills != null and !user.skills.isEmpty()}">
+                    <span th:each="skill : ${user.skills}" th:text="${skill.name}" class="tag skill-tag">Skill</span>
+                </div>
+                <p th:if="${user.skills == null or user.skills.isEmpty()}" class="empty-text">No skills added.</p>
+            </section>
+
+            <section class="glass-card interests-card hover-effect">
+                <div class="card-header-row">
+                    <h2 class="card-title">Interests</h2>
+
+                    <button id="btn-edit-interests" class="icon-btn" aria-label="Edit Interests">
+                        <i class="fas fa-pen"></i>
+                    </button>
+                </div>
+
+                <div class="tags-container" th:if="${user.interests != null and !user.interests.isEmpty()}">
+                    <span th:each="interest : ${user.interests}" th:text="${interest.name}" class="tag interest-tag">Interest</span>
+                </div>
+                <p th:if="${user.interests == null or user.interests.isEmpty()}" class="empty-text">No interests added.</p>
+
+                <div class="looking-for" th:if="${user.lookingForList != null and !user.lookingForList.isEmpty()}">
+                    <h3 class="section-subtitle">Looking For</h3>
+                    <ul class="looking-for-list">
+                        <li th:each="item : ${user.lookingForList}" th:text="${item}">Opportunity</li>
+                    </ul>
+                </div>
+            </section>
+        </aside>
+
+        <section class="right-column">
+            <div class="glass-card toggle-bar">
+                <button class="toggle-btn active" data-section="projects"><i class="fas fa-folder"></i> Projects</button>
+                <button class="toggle-btn" data-section="experience"><i class="fas fa-briefcase"></i> Experience</button>
+                <button class="toggle-btn" data-section="education"><i class="fas fa-graduation-cap"></i> Education</button>
+            </div>
+
+            <div class="content-wrapper">
+
+                <div id="projects-section" class="content-section active">
+                    <div class="section-header-row">
+                        <h2 class="content-title">Projects</h2>
+                        <button id="btn-add-project" class="icon-btn-add"><i class="fas fa-plus"></i></button>
+                    </div>
+                    <div class="projects-grid" th:if="${user.projectList != null and !user.projectList.isEmpty()}">
+                        <article th:each="project : ${user.projectList}" class="glass-card project-card hover-effect">
+                            <div class="project-cover" th:style="${project.coverImageUrl != null} ? 'background-image: url(' + ${project.coverImageUrl} + ');' : ''" th:classappend="${project.coverImageUrl == null} ? 'no-image' : ''">
+                                <div class="project-overlay"></div>
+                                <div class="fallback-icon" th:if="${project.coverImageUrl == null}"><i class="fas fa-code"></i></div>
+                            </div>
+                            <div class="project-content">
+                                <h3 class="project-title" th:text="${project.title}">Title</h3>
+                                <div class="project-meta-row">
+                                    <span class="meta-role" th:if="${project.role != null}" th:text="${project.role}">Role</span>
+                                    <span class="meta-dot" th:if="${project.role != null}">•</span>
+                                    <span class="meta-date" th:text="${project.startDate} + ' - ' + (${project.endDate != null} ? ${project.endDate} : 'Present')">Date</span>
+                                </div>
+                                <p class="project-description" th:text="${project.description}">Desc</p>
+                                <div class="tech-stack" th:if="${project.techStacks != null and !project.techStacks.isEmpty()}">
+                                    <span th:each="tech : ${project.techStacks}" th:text="${tech}" class="tag tech-tag">Tech</span>
+                                </div>
+                                <a th:href="${project.projectUrl}" class="btn-learn-more" th:if="${project.projectUrl != null}" target="_blank">View Project <i class="fas fa-external-link-alt"></i></a>
+                            </div>
+                        </article>
+                    </div>
+                    <div th:if="${user.projectList == null or user.projectList.isEmpty()}" class="empty-state"><p>No projects to display.</p></div>
+                </div>
+
+                <div id="experience-section" class="content-section">
+                    <div class="section-header-row">
+                        <h2 class="content-title">Experience</h2>
+                        <button id="btn-add-experience" class="icon-btn-add"><i class="fas fa-plus"></i></button>
+                    </div>
+                    <div class="vertical-cards" th:if="${user.experienceList != null and !user.experienceList.isEmpty()}">
+                        <article th:each="exp : ${user.experienceList}" class="glass-card experience-card hover-effect">
+                            <div class="card-icon">
+                                <img th:if="${exp.companyImageUrl != null}" th:src="${exp.companyImageUrl}" class="company-icon">
+                                <i th:unless="${exp.companyImageUrl != null}" class="fas fa-building"></i>
+                            </div>
+                            <div class="card-content">
+                                <div class="card-header-flex">
+                                    <h3 class="card-primary" th:text="${exp.role}">Role</h3>
+                                    <span class="card-date" th:text="${exp.startDate} + ' - ' + (${exp.endDate != null} ? ${exp.endDate} : 'Present')">Date</span>
+                                </div>
+                                <p class="card-secondary" th:text="${exp.companyName}">Company</p>
+                                <p class="card-location" th:if="${exp.location != null}"><i class="fas fa-map-marker-alt"></i> <span th:text="${exp.location}">Loc</span></p>
+                                <p class="card-description" th:text="${exp.description}">Desc</p>
+                            </div>
+                        </article>
+                    </div>
+                    <div th:if="${user.experienceList == null or user.experienceList.isEmpty()}" class="empty-state"><p>No experience listed.</p></div>
+                </div>
+
+                <div id="education-section" class="content-section">
+                    <div class="section-header-row">
+                        <h2 class="content-title">Education</h2>
+                        <button id="btn-add-education" class="icon-btn-add"><i class="fas fa-plus"></i></button>
+                    </div>
+                    <div class="vertical-cards" th:if="${user.educationList != null and !user.educationList.isEmpty()}">
+                        <article th:each="edu : ${user.educationList}" class="glass-card education-card hover-effect">
+                            <div class="card-icon">
+                                <img th:if="${edu.institutionImageUrl != null}" th:src="${edu.institutionImageUrl}" class="company-icon">
+                                <i th:unless="${edu.institutionImageUrl != null}" class="fas fa-university"></i>
+                            </div>
+                            <div class="card-content">
+                                <h3 class="card-primary" th:text="${edu.degree}">Degree</h3>
+                                <p class="card-secondary" th:text="${edu.institutionName}">School</p>
+                                <p class="card-tertiary" th:if="${edu.fieldOfStudy != null}" th:text="${edu.fieldOfStudy}">Field</p>
+                                <div class="card-meta"><span th:text="${edu.startDate} + ' - ' + (${edu.endDate != null} ? ${edu.endDate} : 'Present')">Date</span></div>
+                            </div>
+                        </article>
+                    </div>
+                    <div th:if="${user.educationList == null or user.educationList.isEmpty()}" class="empty-state"><p>No education listed.</p></div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<div id="modal-project" class="modal-overlay">
+    <div class="glass-card modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Add Project</h3>
+            <button class="modal-close" aria-label="Close modal"><i class="fas fa-times"></i></button>
+        </div>
+
+        <form id="form-project" th:action="@{/profile}" th:object="${project}" method="post">
+
+            <div class="form-group">
+                <label>Project Title *</label>
+                <input type="text" class="form-input" th:field="*{title}" placeholder="e.g. E-Commerce Platform" required>
+            </div>
+
+            <div class="form-group">
+                <label>Role *</label>
+                <input type="text" class="form-input" th:field="*{role}" placeholder="e.g. Lead Developer" required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Start Date *</label>
+                    <input type="date" class="form-input" th:field="*{startDate}" required>
+                </div>
+                <div class="form-group">
+                    <label>End Date</label>
+                    <input type="date" class="form-input" th:field="*{endDate}">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Description *</label>
+                <textarea class="form-input" rows="3" th:field="*{description}" placeholder="Describe the project..." required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Tech Stacks *</label>
+                <input type="text" class="form-input" th:field="*{techStacks}" placeholder="Separate with commas (e.g. React, Java, MongoDB)" required>
+            </div>
+
+            <div class="form-group">
+                <label>Project URL</label>
+                <input type="url" class="form-input" th:field="*{projectUrl}" placeholder="https://github.com/...">
+            </div>
+
+            <div class="form-group">
+                <label>Cover Image URL</label>
+                <input type="url" class="form-input" th:field="*{coverImageUrl}" placeholder="https://...">
+            </div>
+
+            <div class="form-group">
+                <label>Additional Image URLs</label>
+                <textarea class="form-input" rows="2" th:field="*{imageUrls}" placeholder="Separate URLs with commas"></textarea>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel modal-close-btn">Cancel</button>
+                <button type="submit" class="btn-save">Save Project</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="modal-experience" class="modal-overlay">
+    <div class="glass-card modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Add Experience</h3>
+            <button class="modal-close" aria-label="Close modal"><i class="fas fa-times"></i></button>
+        </div>
+
+        <form id="form-experience" th:action="@{/profile}" th:object="${experience}" method="post">
+
+            <div class="form-group">
+                <label>Company Name *</label>
+                <input type="text" class="form-input" th:field="*{companyName}" placeholder="e.g. Google" required>
+            </div>
+
+            <div class="form-group">
+                <label>Role *</label>
+                <input type="text" class="form-input" th:field="*{role}" placeholder="e.g. Software Engineer" required>
+            </div>
+
+            <div class="form-group">
+                <label>Location *</label>
+                <input type="text" class="form-input" th:field="*{location}" placeholder="e.g. New York, NY" required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Start Date *</label>
+                    <input type="date" class="form-input" th:field="*{startDate}" required>
+                </div>
+                <div class="form-group">
+                    <label>End Date</label>
+                    <input type="date" class="form-input" th:field="*{endDate}">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Description</label>
+                <textarea class="form-input" rows="3" th:field="*{description}" placeholder="Describe your responsibilities..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Company Logo URL</label>
+                <input type="url" class="form-input" th:field="*{companyImageUrl}" placeholder="https://..." >
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel modal-close-btn">Cancel</button>
+                <button type="submit" class="btn-save">Save Experience</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="modal-education" class="modal-overlay">
+    <div class="glass-card modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Add Education</h3>
+            <button class="modal-close" aria-label="Close modal"><i class="fas fa-times"></i></button>
+        </div>
+
+        <form id="form-education" th:action="@{/profile}" th:object="${education}" method="post">
+
+            <div class="form-group">
+                <label>Institution Name *</label>
+                <input type="text" class="form-input" th:field="*{institutionName}" placeholder="e.g. MIT" required>
+            </div>
+
+            <div class="form-group">
+                <label>Degree *</label>
+                <input type="text" class="form-input" th:field="*{degree}" placeholder="e.g. Bachelor of Science" required>
+            </div>
+
+            <div class="form-group">
+                <label>Field of Study *</label>
+                <input type="text" class="form-input" th:field="*{fieldOfStudy}" placeholder="e.g. Computer Science" required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Start Date *</label>
+                    <input type="date" class="form-input" th:field="*{startDate}" required>
+                </div>
+                <div class="form-group">
+                    <label>End Date</label>
+                    <input type="date" class="form-input" th:field="*{endDate}">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Institution Logo URL</label>
+                <input type="url" class="form-input" th:field="*{institutionImageUrl}" placeholder="https://...">
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel modal-close-btn">Cancel</button>
+                <button type="submit" class="btn-save">Save Education</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="modal-pfp" class="modal-overlay">
+    <div class="glass-card modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Change Profile Picture</h3>
+            <button class="modal-close"><i class="fas fa-times"></i></button>
+        </div>
+        <form th:action="@{/upload-image}" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label>Upload Image</label>
+                <input type="file" name="image" class="form-input" accept="image/*" required>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel modal-close-btn">Cancel</button>
+                <button type="submit" class="btn-save">Upload</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="modal-skills" class="modal-overlay">
+    <div class="glass-card modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Edit Skills</h3>
+            <button class="modal-close"><i class="fas fa-times"></i></button>
+        </div>
+
+        <form th:action="@{/add-skill}" method="post">
+            <div class="form-group">
+                <label>Select Skills</label>
+                <div class="checkbox-grid">
+
+                    <div th:each="skill : ${skills}" class="checkbox-item">
+                        <input type="checkbox"
+                               name="skillIds"
+                               th:value="${skill.id}"
+                               th:id="${'skill-' + skill.id}"
+                               th:checked="${user.skills != null and !user.skills.isEmpty() and user.skills.![id].contains(skill.id)}">
+
+                        <label th:for="${'skill-' + skill.id}" th:text="${skill.name}">Skill Name</label>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel modal-close-btn">Cancel</button>
+                <button type="submit" class="btn-save">Save Skills</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="modal-interests" class="modal-overlay">
+    <div class="glass-card modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Edit Interests</h3>
+            <button class="modal-close"><i class="fas fa-times"></i></button>
+        </div>
+
+        <form th:action="@{/update-interests}" method="post">
+
+            <div class="form-group">
+                <label>Select Interests</label>
+                <div class="checkbox-grid">
+
+                    <div th:each="interest : ${interests}" class="checkbox-item">
+                        <input type="checkbox"
+                               name="interestIds"
+                               th:value="${interest.id}"
+                               th:id="${'int-' + interest.id}"
+                               th:checked="${user.interests != null and !user.interests.isEmpty() and user.interests.![id].contains(interest.id)}">
+
+                        <label th:for="${'int-' + interest.id}" th:text="${interest.name}">Interest Name</label>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Looking For</label>
+                <p class="input-hint">Separate items with commas</p>
+                <textarea class="form-input"
+                          name="lookingFor"
+                          rows="3"
+                          placeholder="e.g. Remote work, Open Source contribution, Hackathon team"
+                          th:text="${user.lookingForList != null} ? ${#strings.listJoin(user.lookingForList, ', ')} : ''"></textarea>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel modal-close-btn">Cancel</button>
+                <button type="submit" class="btn-save">Save Interests</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="/js/profile.js"></script>
+</body>
+</html>

@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teamify | Ultra Collaborative OS</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        :root {
+            --bg: #030305; /* Deep void black */
+            --accent-cyan: #22d3ee;
+            --accent-violet: #8b5cf6;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+
+        body {
+            background-color: var(--bg);
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; }
+
+        /* --- 3D CANVAS BACKGROUND --- */
+        #webgl-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: -1;
+            opacity: 0.6;
+        }
+
+        /* --- UTILITIES --- */
+        .text-gradient {
+            background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .text-glow-cyan {
+            text-shadow: 0 0 30px rgba(34, 211, 238, 0.5);
+        }
+
+        /* --- BENTO GRID CARDS --- */
+        .bento-card {
+            background: rgba(10, 10, 12, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            overflow: hidden;
+            position: relative;
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .bento-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 24px;
+            padding: 1px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.1), transparent);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        /* Spotlight Effect Layer */
+        .spotlight {
+            pointer-events: none;
+            position: absolute;
+            width: 100%; height: 100%;
+            top: 0; left: 0;
+            background: radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), rgba(255,255,255,0.06), transparent 40%);
+            z-index: 2;
+        }
+
+        /* --- SCROLL PROGRESS BAR --- */
+        .scroll-line {
+            position: fixed;
+            left: 50%; top: 0;
+            width: 1px; height: 100vh;
+            background: rgba(255,255,255,0.05);
+            z-index: -1;
+        }
+        .scroll-progress {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 0%;
+            background: linear-gradient(to bottom, var(--accent-cyan), var(--accent-violet));
+            box-shadow: 0 0 15px var(--accent-cyan);
+        }
+
+        /* --- GLOW ORBS --- */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            z-index: -2;
+            opacity: 0.4;
+        }
+    </style>
+</head>
+<body class="selection:bg-cyan-500 selection:text-black">
+
+<canvas id="webgl-canvas"></canvas>
+
+<div class="scroll-line"><div class="scroll-progress"></div></div>
+
+<nav class="fixed w-full z-50 top-0 left-0 border-b border-white/5 bg-black/50 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
+        <div class="text-2xl font-bold tracking-tighter">Team<span class="text-cyan-400">ify</span>.</div>
+        <div class="hidden md:flex gap-8 text-sm font-medium text-gray-400">
+            <a href="#" class="hover:text-white transition">Product</a>
+            <a href="#" class="hover:text-white transition">Engine</a>
+            <a href="#" class="hover:text-white transition">Enterprise</a>
+        </div>
+        <a href="#" class="px-6 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 transition text-sm font-medium backdrop-blur-md">
+            Get Early Access
+        </a>
+    </div>
+</nav>
+
+<section class="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
+    <div class="orb w-[500px] h-[500px] bg-indigo-900/30 top-[-100px] left-[-100px]"></div>
+    <div class="orb w-[400px] h-[400px] bg-cyan-900/20 bottom-0 right-0"></div>
+
+    <div class="text-center z-10 max-w-5xl px-6">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-cyan-500/30 bg-cyan-900/10 text-cyan-400 text-xs font-mono mb-8 hero-anim">
+            <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+            V2.0 LIVE: AI MATCHING ENGINE
+        </div>
+
+        <h1 class="text-6xl md:text-8xl font-bold leading-tight mb-6 tracking-tighter hero-anim">
+            Connect. <br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-500 text-glow-cyan">Build.</span> Ship.
+        </h1>
+
+        <p class="text-gray-400 text-xl md:text-2xl max-w-2xl mx-auto mb-10 hero-anim font-light">
+            The operating system for student teams. Turn scattered networks into high-performance shipping squads.
+        </p>
+
+        <div class="flex flex-col md:flex-row gap-4 justify-center items-center hero-anim">
+            <button class="group relative px-8 py-4 rounded-full bg-white text-black font-bold text-lg overflow-hidden">
+                <span class="relative z-10 group-hover:text-white transition-colors duration-300">Start Building</span>
+                <div class="absolute inset-0 bg-cyan-600 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300 ease-out"></div>
+            </button>
+            <button class="px-8 py-4 rounded-full border border-white/20 hover:bg-white/5 transition text-lg flex items-center gap-2 group">
+                View Demo
+                <svg class="w-4 h-4 group-hover:translate-x-1 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </button>
+        </div>
+    </div>
+</section>
+
+<section class="py-32 px-6 relative z-10">
+    <div class="max-w-7xl mx-auto">
+        <div class="mb-20">
+            <h2 class="text-4xl md:text-5xl font-bold mb-6">Engineered for <br> <span class="text-gray-500">velocity.</span></h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[400px]">
+
+            <div class="bento-card md:col-span-2 p-10 flex flex-col justify-between group">
+                <div class="spotlight"></div>
+                <div>
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                    <h3 class="text-3xl font-bold mb-2">Algorithmic Matching</h3>
+                    <p class="text-gray-400 max-w-md">Our neural engine analyzes github repos, skills, and timezone to pair you with the perfect co-founder.</p>
+                </div>
+                <div class="mt-8 p-4 rounded-xl border border-white/10 bg-black/40 font-mono text-sm text-gray-300 transform group-hover:translate-y-[-10px] transition duration-500">
+                    <div class="flex gap-2 mb-2">
+                        <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                    </div>
+                    <p><span class="text-purple-400">const</span> squad = <span class="text-cyan-400">await</span> Teamify.match({</p>
+                    <p class="pl-4">role: <span class="text-green-400">'Frontend'</span>,</p>
+                    <p class="pl-4">stack: [<span class="text-green-400">'React'</span>, <span class="text-green-400">'ThreeJS'</span>]</p>
+                    <p>});</p>
+                </div>
+            </div>
+
+            <div class="bento-card md:row-span-2 p-8 flex flex-col relative group">
+                <div class="spotlight"></div>
+                <div class="absolute inset-0 bg-gradient-to-b from-transparent to-black/90 z-10"></div>
+
+                <div class="flex-1 flex flex-col gap-3 py-4 mask-fade">
+                    <div class="self-start bg-white/10 p-3 rounded-2xl rounded-tl-none text-xs max-w-[80%]">Need a UX designer for the hackathon?</div>
+                    <div class="self-end bg-cyan-600/20 border border-cyan-500/30 p-3 rounded-2xl rounded-tr-none text-xs max-w-[80%] text-cyan-200">Found 3 matches. Sending invites...</div>
+                    <div class="self-start bg-white/10 p-3 rounded-2xl rounded-tl-none text-xs max-w-[80%]">Alex joined the squad.</div>
+                </div>
+
+                <div class="relative z-20 mt-auto">
+                    <h3 class="text-2xl font-bold mb-2">Real-time Comms</h3>
+                    <p class="text-gray-400 text-sm">Built-in chat, video, and Kanban boards. Zero friction.</p>
+                </div>
+            </div>
+
+            <div class="bento-card p-8 flex flex-col justify-center items-center text-center group">
+                <div class="spotlight"></div>
+                <div class="relative w-32 h-32 mb-6 perspective-1000">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-purple-500 to-pink-500 rounded-full blur-[40px] opacity-40 group-hover:opacity-60 transition"></div>
+                    <div class="cube-loader w-full h-full border border-white/20 rounded-xl flex items-center justify-center bg-black/50 backdrop-blur-xl">
+                        <span class="text-4xl font-bold">4X</span>
+                    </div>
+                </div>
+                <h3 class="text-xl font-bold">Faster Execution</h3>
+                <p class="text-gray-400 text-sm mt-2">Teams formed on Teamify ship 4x faster than traditional groups.</p>
+            </div>
+
+            <div class="bento-card p-8 overflow-hidden group">
+                <div class="spotlight"></div>
+                <h3 class="text-2xl font-bold mb-2">Global Leaderboard</h3>
+                <p class="text-gray-400 text-sm mb-6">Compete for venture capital and grants.</p>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/5">
+                        <div class="flex items-center gap-3">
+                            <span class="font-mono text-cyan-400">01</span>
+                            <span>Team Alpha</span>
+                        </div>
+                        <span class="text-xs px-2 py-1 rounded bg-green-500/20 text-green-400">+24%</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/5 opacity-60">
+                        <div class="flex items-center gap-3">
+                            <span class="font-mono text-gray-500">02</span>
+                            <span>Beta Squad</span>
+                        </div>
+                        <span class="text-xs px-2 py-1 rounded bg-white/10">+12%</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<section class="py-32 relative">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="flex flex-col md:flex-row items-center gap-20">
+            <div class="md:w-1/2">
+                <h2 class="text-5xl font-bold mb-8 leading-tight">Ship code fast. <br> <span class="text-cyan-400">Automate everything.</span></h2>
+                <p class="text-gray-400 text-lg mb-8">From the first commit to the final deploy, Teamify handles the messy parts of collaboration so you can focus on the code.</p>
+                <ul class="space-y-4">
+                    <li class="flex items-center gap-4">
+                        <div class="w-8 h-8 rounded-full bg-cyan-500/10 flex items-center justify-center text-cyan-400">✓</div>
+                        <span>Automated Kanban Workflows</span>
+                    </li>
+                    <li class="flex items-center gap-4">
+                        <div class="w-8 h-8 rounded-full bg-cyan-500/10 flex items-center justify-center text-cyan-400">✓</div>
+                        <span>One-click Github Integration</span>
+                    </li>
+                    <li class="flex items-center gap-4">
+                        <div class="w-8 h-8 rounded-full bg-cyan-500/10 flex items-center justify-center text-cyan-400">✓</div>
+                        <span>Smart Role Assignment</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="md:w-1/2 relative">
+                <div class="relative w-full aspect-square bg-gradient-to-br from-gray-900 to-black rounded-3xl border border-white/10 p-8 flex items-center justify-center overflow-hidden">
+                    <svg class="absolute inset-0 w-full h-full z-0 opacity-20" viewBox="0 0 400 400">
+                        <path class="pipeline-path" d="M -50,200 Q 100,200 200,100 T 450,200" fill="none" stroke="#22d3ee" stroke-width="2" />
+                        <path class="pipeline-path" d="M -50,200 Q 100,200 200,300 T 450,200" fill="none" stroke="#8b5cf6" stroke-width="2" style="animation-delay: 1s"/>
+                    </svg>
+
+                    <div class="relative z-10 grid grid-cols-2 gap-4">
+                        <div class="w-32 h-32 bg-black/80 backdrop-blur-xl border border-cyan-500/30 rounded-xl flex flex-col items-center justify-center float-anim">
+                            <span class="text-2xl">Build</span>
+                        </div>
+                        <div class="w-32 h-32 bg-black/80 backdrop-blur-xl border border-purple-500/30 rounded-xl flex flex-col items-center justify-center float-anim" style="animation-delay: 0.5s">
+                            <span class="text-2xl">Test</span>
+                        </div>
+                        <div class="w-32 h-32 bg-black/80 backdrop-blur-xl border border-pink-500/30 rounded-xl flex flex-col items-center justify-center float-anim" style="animation-delay: 1s">
+                            <span class="text-2xl">Deploy</span>
+                        </div>
+                        <div class="w-32 h-32 bg-gradient-to-br from-cyan-600 to-blue-700 rounded-xl flex flex-col items-center justify-center shadow-lg shadow-cyan-500/20 float-anim" style="animation-delay: 1.5s">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer class="py-20 border-t border-white/5 bg-black">
+    <div class="max-w-7xl mx-auto px-6 text-center">
+        <h2 class="text-[12vw] font-bold leading-none tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-gray-700 to-black select-none">
+            TEAMIFY
+        </h2>
+        <div class="flex flex-col md:flex-row justify-between items-center mt-12 text-sm text-gray-500">
+            <p>&copy; 2026 Teamify Inc.</p>
+            <div class="flex gap-6 mt-4 md:mt-0">
+                <a href="#" class="hover:text-white">Privacy</a>
+                <a href="#" class="hover:text-white">Terms</a>
+                <a href="#" class="hover:text-white">Twitter</a>
+                <a href="#" class="hover:text-white">GitHub</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+<script>
+    // --- 1. THREE.JS PARTICLE NETWORK BACKGROUND ---
+    const initThreeJS = () => {
+        const canvas = document.getElementById('webgl-canvas');
+        const scene = new THREE.Scene();
+        // Fog for depth fading
+        scene.fog = new THREE.FogExp2(0x030305, 0.002);
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        // Particles
+        const geometry = new THREE.BufferGeometry();
+        const particlesCount = 700;
+        const posArray = new Float32Array(particlesCount * 3);
+
+        for(let i = 0; i < particlesCount * 3; i++) {
+            // Spread particles in a large cloud
+            posArray[i] = (Math.random() - 0.5) * 25;
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+        // Material
+        const material = new THREE.PointsMaterial({
+            size: 0.03,
+            color: 0x22d3ee, // Cyan
+            transparent: true,
+            opacity: 0.8,
+        });
+
+        // Mesh
+        const particlesMesh = new THREE.Points(geometry, material);
+        scene.add(particlesMesh);
+
+        // Connecting Lines (optional, keeping it simple for performance: using simple rotation)
+        // To make it look like a "Network", we'll add a second layer of larger, connected nodes
+        const geometry2 = new THREE.IcosahedronGeometry(10, 1);
+        const material2 = new THREE.MeshBasicMaterial({
+            color: 0x8b5cf6,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.05
+        });
+        const sphere = new THREE.Mesh(geometry2, material2);
+        scene.add(sphere);
+
+        camera.position.z = 5;
+
+        // Mouse Interaction
+        let mouseX = 0;
+        let mouseY = 0;
+
+        document.addEventListener('mousemove', (event) => {
+            mouseX = event.clientX / window.innerWidth - 0.5;
+            mouseY = event.clientY / window.innerHeight - 0.5;
+        });
+
+        // Animation Loop
+        const clock = new THREE.Clock();
+
+        const tick = () => {
+            const elapsedTime = clock.getElapsedTime();
+
+            // Rotate entire system slowly
+            particlesMesh.rotation.y = elapsedTime * 0.05;
+            particlesMesh.rotation.x = mouseY * 0.1;
+            particlesMesh.rotation.y += mouseX * 0.1;
+
+            sphere.rotation.x = elapsedTime * 0.1;
+            sphere.rotation.y = elapsedTime * 0.1;
+
+            // Waving motion for particles
+            for(let i = 0; i < particlesCount; i++) {
+                const i3 = i * 3;
+                const x = geometry.attributes.position.array[i3];
+                // gentle wave
+                geometry.attributes.position.array[i3 + 1] += Math.sin(elapsedTime + x) * 0.002;
+            }
+            geometry.attributes.position.needsUpdate = true;
+
+            renderer.render(scene, camera);
+            window.requestAnimationFrame(tick);
+        }
+
+        tick();
+
+        // Resize handle
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    };
+
+    // --- 2. GSAP SCROLL ANIMATIONS ---
+    const initAnimations = () => {
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Hero Text Reveal
+        gsap.from(".hero-anim", {
+            y: 50,
+            opacity: 0,
+            duration: 1,
+            stagger: 0.2,
+            ease: "power3.out"
+        });
+
+        // Progress Bar
+        gsap.to(".scroll-progress", {
+            height: "100%",
+            ease: "none",
+            scrollTrigger: {
+                trigger: "body",
+                start: "top top",
+                end: "bottom bottom",
+                scrub: true
+            }
+        });
+
+        // Bento Cards Stagger
+        gsap.from(".bento-card", {
+            y: 100,
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.1,
+            ease: "power2.out",
+            scrollTrigger: {
+                trigger: ".bento-card",
+                start: "top 80%"
+            }
+        });
+    };
+
+    // --- 3. MOUSE SPOTLIGHT EFFECT ---
+    const initSpotlight = () => {
+        const cards = document.querySelectorAll('.bento-card');
+
+        document.addEventListener('mousemove', (e) => {
+            cards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+    };
+
+    // Run Everything
+    window.addEventListener('load', () => {
+        initThreeJS();
+        initAnimations();
+        initSpotlight();
+    });
+
+</script>
+
+<style>
+    /* Extra Animations for CSS-only elements */
+    @keyframes float-anim {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+    .float-anim { animation: float-anim 4s ease-in-out infinite; }
+
+    .mask-fade {
+        -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+        mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+    }
+
+    .pipeline-path {
+        stroke-dasharray: 10;
+        animation: dash 30s linear infinite;
+    }
+
+    @keyframes dash {
+        to { stroke-dashoffset: -1000; }
+    }
+</style>
+</body>
+</html>
