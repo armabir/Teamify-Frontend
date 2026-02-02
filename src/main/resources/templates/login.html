@@ -4,21 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Teamify</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/css/login.css">
 </head>
 <body>
 
-<div class="background-shape shape-1"></div>
-<div class="background-shape shape-2"></div>
+<canvas id="webgl-canvas"></canvas>
+<div class="orb" style="position: absolute; width: 500px; height: 500px; background: rgba(34, 211, 238, 0.15); bottom: -100px; right: -100px; border-radius: 50%; filter: blur(120px); z-index: -1;"></div>
 
 <div th:if="${param.error}" class="toast-container">
     <div class="toast toast-error">
-        <i class="fa-solid fa-circle-exclamation"></i>
+        <i class="fa-solid fa-circle-exclamation" style="color: var(--danger)"></i>
         <div class="toast-content">
-            <span class="toast-title">Login Failed</span>
-            <span class="toast-msg">Invalid username or password.</span>
+            <span class="toast-title" style="display:block; font-weight:700; font-size:0.9rem">Login Failed</span>
+            <span class="toast-msg" style="font-size:0.8rem; color: #aaa;">Invalid username or password.</span>
         </div>
         <button class="toast-close" onclick="this.parentElement.remove()">&times;</button>
     </div>
@@ -26,74 +27,73 @@
 
 <div th:if="${param.success}" class="toast-container">
     <div class="toast toast-success">
-        <i class="fa-solid fa-circle-check"></i>
+        <i class="fa-solid fa-circle-check" style="color: var(--success)"></i>
         <div class="toast-content">
-            <span class="toast-title">Success</span>
-            <span class="toast-msg">Account created! Please log in.</span>
+            <span class="toast-title" style="display:block; font-weight:700; font-size:0.9rem">Success</span>
+            <span class="toast-msg" style="font-size:0.8rem; color: #aaa;">Account created! Please log in.</span>
         </div>
         <button class="toast-close" onclick="this.parentElement.remove()">&times;</button>
     </div>
 </div>
 
-<div class="container">
-    <div class="glass-card login-card">
-        <div class="header-section">
-            <h2>Welcome Back</h2>
-            <p>Enter your credentials to access your workspace.</p>
+<div class="bento-card">
+    <div class="spotlight"></div>
+
+    <div class="header-section" style="position: relative; z-index: 2;">
+        <h2>Welcome Back</h2>
+        <p>Enter your credentials to access your workspace.</p>
+    </div>
+
+    <form th:action="@{/login}" method="POST" style="position: relative; z-index: 2;">
+
+        <div class="input-group">
+            <label for="username">Username or Email</label>
+            <div class="input-wrapper">
+                <i class="fa-regular fa-user"></i>
+                <input type="text" id="username" name="username" placeholder="alex@mit.edu" required autofocus>
+            </div>
         </div>
 
-        <form th:action="@{/login}" method="POST">
-
-            <div class="input-group">
-                <label for="username">Username or Email</label>
-                <div class="input-wrapper">
-                    <i class="fa-regular fa-user"></i>
-                    <input type="text" id="username" name="username" placeholder="alex@mit.edu" required autofocus>
-                </div>
+        <div class="input-group">
+            <label for="password">Password</label>
+            <div class="input-wrapper">
+                <i class="fa-solid fa-lock"></i>
+                <input type="password" id="password" name="password" placeholder="••••••••" required>
+                <i class="fa-regular fa-eye password-toggle" id="togglePassword"></i>
             </div>
+        </div>
 
-            <div class="input-group">
-                <label for="password">Password</label>
-                <div class="input-wrapper">
-                    <i class="fa-solid fa-lock"></i>
-                    <input type="password" id="password" name="password" placeholder="••••••••" required>
-                    <i class="fa-regular fa-eye password-toggle" id="togglePassword"></i>
-                </div>
-            </div>
+        <div class="form-actions">
+            <label class="remember-me">
+                <input type="checkbox" name="remember-me">
+                Remember me
+            </label>
+            <a href="/forgot-password" class="forgot-link">Forgot Password?</a>
+        </div>
 
-            <div class="form-actions">
-                <label class="remember-me">
-                    <input type="checkbox" name="remember-me">
-                    <span class="checkmark"></span>
-                    Remember me
-                </label>
-                <a href="/forgot-password" class="forgot-link">Forgot Password?</a>
-            </div>
+        <button type="submit" class="btn-submit">
+            Log In <i class="fa-solid fa-arrow-right-to-bracket"></i>
+        </button>
 
-            <button type="submit" class="btn-submit">
-                Log In <i class="fa-solid fa-arrow-right-to-bracket"></i>
+        <div class="separator">
+            <span>Or continue with</span>
+        </div>
+
+        <div class="social-login">
+            <button type="button" class="btn-social google">
+                <i class="fa-brands fa-google"></i> Google
             </button>
+            <button type="button" class="btn-social github">
+                <i class="fa-brands fa-github"></i> GitHub
+            </button>
+        </div>
 
-            <p class="login-link">New here? <a th:href="@{/signup}">Create an Account</a></p>
-            <br>
+        <p class="login-link">New here? <a th:href="@{/signup}">Create an Account</a></p>
 
-            <div class="separator">
-                <span>OR</span>
-            </div>
-
-            <div class="social-login">
-                <button type="button" class="btn-social google">
-                    <i class="fa-brands fa-google"></i> Google
-                </button>
-                <button type="button" class="btn-social github">
-                    <i class="fa-brands fa-github"></i> GitHub
-                </button>
-            </div>
-
-        </form>
-    </div>
+    </form>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="/js/login.js"></script>
 </body>
 </html>

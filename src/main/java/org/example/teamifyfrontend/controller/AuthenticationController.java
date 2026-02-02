@@ -85,7 +85,7 @@ public class AuthenticationController {
             return "redirect:/add-info";
         }
 
-        return "redirect:/profile";
+        return "redirect:/dashboard";
     }
 
     @GetMapping("/add-info")

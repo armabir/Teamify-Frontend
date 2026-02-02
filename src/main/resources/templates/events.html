@@ -4,176 +4,187 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Events | Teamify</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="/css/discover.css" th:href="@{/css/discover.css}">
-
-    <style>
-        :root {
-            --bg: #030305;
-            --accent-cyan: #22d3ee;
-            --accent-violet: #8b5cf6;
-            --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
-        }
-
-        body {
-            background-color: var(--bg);
-            color: #fff;
-            font-family: 'Inter', sans-serif;
-        }
-
-        h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; }
-
-        /* Bento-style Event Cards */
-        .event-card {
-            background: rgba(10, 10, 12, 0.6);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .event-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(34, 211, 238, 0.4);
-        }
-
-        .event-banner {
-            height: 160px;
-            background-size: cover;
-            background-position: center;
-            position: relative;
-        }
-
-        .event-type-badge {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(5px);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            border: 1px solid var(--accent-cyan);
-            color: var(--accent-cyan);
-        }
-
-        .spotlight {
-            pointer-events: none;
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(400px circle at var(--mouse-x) var(--mouse-y), rgba(34, 211, 238, 0.08), transparent 40%);
-            z-index: 1;
-        }
-
-        .text-gradient {
-            background: linear-gradient(135deg, #fff 0%, var(--accent-cyan) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-    </style>
+    <link rel="stylesheet" href="/css/events.css" th:href="@{/css/events.css}">
 </head>
-<body class="bg-[#030305]">
+<body>
 
+<!-- Ambient Glows -->
+<div class="ambient-glow glow-1"></div>
+<div class="ambient-glow glow-2"></div>
+
+<!-- Sidebar -->
 <aside id="sidebar" class="sidebar">
     <div class="sidebar-header">
-        <div class="sidebar-logo"><i class="fas fa-users-cog text-cyan-400"></i><span class="sidebar-logo-text">Teamify</span></div>
+        <div class="sidebar-logo">
+            <span class="logo-text">Team<span class="text-highlight">ify</span>.</span>
+        </div>
+        <button id="sidebar-close" class="sidebar-close-btn"><i class="fas fa-times"></i></button>
     </div>
     <nav class="sidebar-nav">
+        <a href="/profile" class="sidebar-link"><i class="fas fa-user"></i><span>Profile</span></a>
         <a href="/dashboard" class="sidebar-link"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
         <a href="/discover" class="sidebar-link"><i class="fas fa-compass"></i><span>Discover</span></a>
+        <a href="/teams" class="sidebar-link"><i class="fas fa-users"></i><span>Teams</span></a>
         <a href="/events" class="sidebar-link active"><i class="fas fa-calendar-alt"></i><span>Events</span></a>
     </nav>
+    <div class="sidebar-footer">
+        <a href="/signout" class="sidebar-link logout-link"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+    </div>
 </aside>
 
+<button id="sidebar-toggle" class="sidebar-toggle-btn"><i class="fas fa-bars"></i></button>
+<div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+<!-- Page Wrapper -->
 <div class="page-wrapper">
-    <main class="main-content p-8">
-        <header class="mb-12">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-cyan-500/30 bg-cyan-900/10 text-cyan-400 text-xs font-mono mb-4">
-                <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+    <main class="main-content">
+
+        <!-- Header -->
+        <header class="events-header">
+            <div class="status-badge">
+                <span class="status-dot"></span>
                 SYSTEM UPDATE: NEW HACKATHONS LIVE
             </div>
-            <h1 class="text-5xl font-bold mb-2">Upcoming <span class="text-gradient">Events</span></h1>
-            <p class="text-gray-400">Sync with the network. Expand your skills.</p>
+            <div class="header-text">
+                <h1>Upcoming <span class="text-gradient">Events</span></h1>
+                <p>Sync with the network. Expand your skills.</p>
+            </div>
         </header>
 
-        <div class="flex flex-col md:flex-row gap-4 mb-10">
-            <div class="relative flex-1">
-                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
-                <input type="text" placeholder="Search hackathons, workshops..."
-                       class="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:border-cyan-500/50 transition">
+        <!-- Filters & Search -->
+        <div class="filter-section">
+            <div class="search-bar-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="eventSearchInput" placeholder="Search hackathons, workshops..." class="glass-input">
             </div>
-            <div class="flex gap-2">
-                <button class="px-6 py-2 rounded-xl bg-cyan-500 text-black font-semibold">All</button>
-                <button class="px-6 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition">Virtual</button>
-                <button class="px-6 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition">In-Person</button>
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="virtual">Virtual</button>
+                <button class="filter-btn" data-filter="in-person">In-Person</button>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div th:each="event : ${events}" class="event-card group">
+        <!-- Events Grid -->
+        <section class="events-grid">
+            <div th:each="event : ${events}" class="event-card" th:attr="data-event-id=${event.id}">
                 <div class="spotlight"></div>
+                <div class="card-decoration"></div>
 
+                <!-- Event Banner -->
                 <div class="event-banner"
                      th:style="'background-image: linear-gradient(to bottom, transparent, rgba(3,3,5,0.9)), url(' + (${event.coverUrl != null ? event.coverUrl : '/images/default-event.jpg'}) + ');'">
                     <span class="event-type-badge" th:text="${event.eventType}">Workshop</span>
                 </div>
 
-                <div class="p-6 relative z-10">
-                    <div class="flex justify-between items-start mb-3">
-                        <span class="text-xs font-mono text-cyan-400" th:text="${#temporals.format(event.createdAt, 'dd MMM yyyy')}">02 FEB 2026</span>
-                        <div class="flex -space-x-2">
+                <!-- Event Content -->
+                <div class="event-content">
+                    <div class="event-meta-row">
+                        <span class="event-date" th:text="${#temporals.format(event.createdAt, 'dd MMM yyyy')}">02 FEB 2026</span>
+                        <div class="team-avatars">
                             <div th:each="teamName : ${event.teamNames}"
-                                 class="w-6 h-6 rounded-full bg-indigo-600 border border-black flex items-center justify-center text-[10px] font-bold"
+                                 class="team-avatar"
                                  th:title="${teamName}">
                                 <span th:text="${#strings.substring(teamName,0,1)}">T</span>
                             </div>
                         </div>
                     </div>
 
-                    <h3 class="text-xl font-bold mb-2 group-hover:text-cyan-400 transition" th:text="${event.title}">Event Title</h3>
-                    <p class="text-gray-400 text-sm line-clamp-2 mb-4" th:text="${event.shortDescription}">Short description of the event goes here...</p>
+                    <h3 class="event-title" th:text="${event.title}">Event Title</h3>
+                    <p class="event-description" th:text="${event.shortDescription}">Short description of the event goes here...</p>
 
-                    <div class="flex items-center gap-4 text-xs text-gray-500 mb-6">
-                        <span><i class="fas fa-map-marker-alt mr-1 text-cyan-500"></i> <span th:text="${event.location}">Remote</span></span>
+                    <div class="event-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span th:text="${event.location}">Remote</span>
                     </div>
 
-                    <div class="flex gap-3">
-                        <a th:href="@{/events/{id}(id=${event.id})}" class="flex-1 text-center py-2 rounded-lg bg-white/10 hover:bg-white/20 transition text-sm font-medium border border-white/10">
+                    <!-- Event Actions -->
+                    <div class="event-actions">
+                        <button class="btn-details"
+                                th:attr="data-event-id=${event.id},
+                                         data-event-title=${event.title},
+                                         data-event-description=${event.shortDescription},
+                                         data-event-description=${event.fullDescription},
+                                         data-event-type=${event.eventType},
+                                         data-event-location=${event.location},
+                                         data-event-date=${#temporals.format(event.createdAt, 'dd MMM yyyy')},
+                                         data-event-cover=${event.coverUrl}">
                             Details
-                        </a>
-                        <button class="px-4 py-2 rounded-lg bg-cyan-600/20 text-cyan-400 border border-cyan-500/30 hover:bg-cyan-600/40 transition">
+                        </button>
+                        <button class="btn-add-calendar" title="Add to Calendar">
                             <i class="far fa-calendar-plus"></i>
                         </button>
                     </div>
                 </div>
             </div>
+        </section>
+
+        <!-- Empty State -->
+        <div th:if="${events == null or events.empty}" class="empty-state">
+            <div class="empty-icon">
+                <i class="fas fa-calendar-times"></i>
+            </div>
+            <h3>No events found</h3>
+            <p>Check back later for new opportunities.</p>
         </div>
 
-        <div th:if="${events == null or events.empty}" class="text-center py-20">
-            <i class="fas fa-calendar-times text-5xl text-gray-700 mb-4"></i>
-            <h3 class="text-2xl font-bold">No events found</h3>
-            <p class="text-gray-500">Check back later for new opportunities.</p>
-        </div>
     </main>
 </div>
 
-<script>
-    // Spotlight Effect Logic from Landing Page
-    const cards = document.querySelectorAll('.event-card');
-    document.addEventListener('mousemove', (e) => {
-        cards.forEach(card => {
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            card.style.setProperty('--mouse-x', `${x}px`);
-            card.style.setProperty('--mouse-y', `${y}px`);
-        });
-    });
-</script>
+<!-- Event Details Modal -->
+<div id="modal-event-details" class="modal-overlay">
+    <div class="glass-card modal-content modal-event">
+        <div class="modal-header">
+            <h3 class="modal-title" id="modal-event-title">Event Details</h3>
+            <button class="modal-close"><i class="fas fa-times"></i></button>
+        </div>
+
+        <div class="modal-body">
+            <!-- Event Cover Image -->
+            <div id="modal-event-cover" class="modal-event-cover"></div>
+
+            <!-- Event Info -->
+            <div class="modal-event-info">
+                <div class="info-row">
+                    <div class="info-label">
+                        <i class="fas fa-tag"></i> Type
+                    </div>
+                    <div class="info-value" id="modal-event-type">Workshop</div>
+                </div>
+
+                <div class="info-row">
+                    <div class="info-label">
+                        <i class="fas fa-calendar"></i> Date
+                    </div>
+                    <div class="info-value" id="modal-event-date">02 FEB 2026</div>
+                </div>
+
+                <div class="info-row">
+                    <div class="info-label">
+                        <i class="fas fa-map-marker-alt"></i> Location
+                    </div>
+                    <div class="info-value" id="modal-event-location">Remote</div>
+                </div>
+            </div>
+
+            <!-- Event Description -->
+            <div class="modal-event-description">
+                <h4>About This Event</h4>
+                <p id="modal-event-description-text">Event description will appear here...</p>
+            </div>
+
+            <!-- Modal Actions -->
+            <div class="modal-actions">
+                <button class="btn-cancel modal-close-btn">Close</button>
+                <button class="btn-save">
+                    <i class="far fa-calendar-plus"></i> Add to Calendar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/js/events.js" th:src="@{/js/events.js}"></script>
 </body>
 </html>
