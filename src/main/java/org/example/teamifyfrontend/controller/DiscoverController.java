@@ -33,7 +33,7 @@ public class DiscoverController {
         model.addAttribute("users", userList);
         model.addAttribute("teams", teamApiClient.getAllTeams());
 
-        return "discover-v2";
+        return "discover";
     }
 
     @GetMapping("/discover-v1")

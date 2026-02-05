@@ -80,8 +80,14 @@ h1, h2, h3, h4, .logo-text {
     right: 0;
 }
 
+.page-wrapper {
+    transition: margin-left var(--transition);
+    min-height: 100vh;
+    margin-left: var(--sidebar-width); /* Default Desktop Margin */
+}
+
 /* ========================================
-   SIDEBAR
+   SIDEBAR (Desktop Default: OPEN)
    ======================================== */
 .sidebar {
     position: fixed;
@@ -99,20 +105,15 @@ h1, h2, h3, h4, .logo-text {
     transition: transform var(--transition);
 }
 
-.page-wrapper {
-    transition: margin-left var(--transition);
-    min-height: 100vh;
-    margin-left: var(--sidebar-width);
-}
-
+/* Sidebar Toggle Button */
 .sidebar-toggle-btn {
     position: fixed;
     top: 1rem;
     left: 1rem;
+    padding: 0.75rem;
     background: var(--bg-secondary);
     border: 1px solid var(--card-border);
     color: var(--text-primary);
-    padding: 0.75rem;
     border-radius: var(--radius-sm);
     cursor: pointer;
     z-index: 900;
@@ -127,12 +128,10 @@ h1, h2, h3, h4, .logo-text {
     color: var(--accent-cyan);
 }
 
+/* Sidebar Overlay */
 .sidebar-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(4px);
     z-index: 950;
@@ -141,7 +140,7 @@ h1, h2, h3, h4, .logo-text {
     transition: opacity 0.3s ease;
 }
 
-/* Desktop: Closed State */
+/* Desktop: Closed State Logic */
 @media (min-width: 992px) {
     body.sidebar-closed .sidebar {
         transform: translateX(-100%);
@@ -156,7 +155,7 @@ h1, h2, h3, h4, .logo-text {
     }
 }
 
-/* Mobile: Default State */
+/* Mobile: Default State Logic */
 @media (max-width: 991px) {
     .sidebar {
         transform: translateX(-100%);
@@ -180,6 +179,7 @@ h1, h2, h3, h4, .logo-text {
     }
 }
 
+/* Sidebar Header & Links */
 .sidebar-header {
     padding: var(--spacing-lg);
     border-bottom: 1px solid var(--card-border);
@@ -194,10 +194,7 @@ h1, h2, h3, h4, .logo-text {
     letter-spacing: -0.05em;
 }
 
-.logo-text {
-    font-family: 'Space Grotesk', sans-serif;
-}
-
+/* ADD THIS RULE HERE: */
 .text-highlight {
     color: var(--accent-cyan);
 }
@@ -206,13 +203,14 @@ h1, h2, h3, h4, .logo-text {
     background: none;
     border: none;
     color: var(--text-secondary);
-    font-size: 1.25rem;
     cursor: pointer;
+    font-size: 1.25rem;
     transition: var(--transition);
 }
 
 .sidebar-close-btn:hover {
     color: var(--accent-cyan);
+    transform: rotate(90deg);
 }
 
 .sidebar-nav {
@@ -227,9 +225,17 @@ h1, h2, h3, h4, .logo-text {
     padding: var(--spacing-md) var(--spacing-lg);
     color: var(--text-secondary);
     text-decoration: none;
-    transition: var(--transition);
     border-left: 3px solid transparent;
+    transition: 0.2s ease;
     font-weight: 500;
+}
+
+.sidebar-link i {
+    width: 24px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .sidebar-link:hover,
@@ -239,16 +245,10 @@ h1, h2, h3, h4, .logo-text {
     border-left-color: var(--accent-cyan);
 }
 
-.sidebar-link i {
-    width: 20px;
-    text-align: center;
-}
-
 .sidebar-footer {
-    border-top: 1px solid var(--card-border);
     padding: var(--spacing-md);
+    border-top: 1px solid var(--card-border);
 }
-
 /* ========================================
    MAIN CONTENT
    ======================================== */

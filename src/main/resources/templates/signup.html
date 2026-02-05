@@ -66,6 +66,16 @@
             <div class="input-wrapper">
                 <i class="fa-solid fa-at"></i>
                 <input type="text" id="username" th:field="*{username}" placeholder="alexrivera.dev" required>
+                <i class="fa-solid fa-check match-icon" id="userIcon" style="right: 1.25rem;"></i>
+            </div>
+
+            <div class="password-strength-container" id="username-validation" style="display: none;">
+                <ul class="strength-requirements">
+                    <li id="u-req-start"><i class="fa-solid fa-circle"></i> Start with a letter</li>
+                    <li id="u-req-chars"><i class="fa-solid fa-circle"></i> Letters, numbers, " . - _ "</li>
+                    <li id="u-req-space"><i class="fa-solid fa-circle"></i> No spaces</li>
+                    <li id="u-req-length"><i class="fa-solid fa-circle"></i> 3-30 characters</li>
+                </ul>
             </div>
         </div>
 
@@ -82,9 +92,10 @@
             <div class="input-wrapper">
                 <i class="fa-solid fa-lock"></i>
                 <input type="password" id="password" th:field="*{password}" placeholder="••••••••" required>
+                <i class="fa-solid fa-eye toggle-password" id="togglePassword"></i>
             </div>
 
-            <div class="password-strength-container">
+            <div class="password-strength-container" id="password-validation">
                 <div class="strength-meta">
                     <span style="font-size: 0.75rem; color: var(--text-muted);">Security Level</span>
                     <span id="strengthText">Weak</span>
@@ -93,7 +104,7 @@
                     <div class="strength-fill" id="strengthFill"></div>
                 </div>
 
-                <ul class="strength-requirements">
+                <ul class="strength-requirements" id="password-req-list">
                     <li id="req-length"><i class="fa-solid fa-circle"></i> 8+ Characters</li>
                     <li id="req-upper"><i class="fa-solid fa-circle"></i> Uppercase</li>
                     <li id="req-lower"><i class="fa-solid fa-circle"></i> Lowercase</li>
@@ -109,6 +120,7 @@
                 <i class="fa-solid fa-lock"></i>
                 <input type="password" id="confirmPassword" name="confirmPassword" placeholder="••••••••" required>
                 <i class="fa-solid fa-check match-icon" id="matchIcon"></i>
+                <i class="fa-solid fa-eye toggle-password" id="toggleConfirm"></i>
             </div>
         </div>
 

@@ -22,19 +22,34 @@
         </div>
         <button id="sidebar-close" class="sidebar-close-btn"><i class="fas fa-times"></i></button>
     </div>
+
     <nav class="sidebar-nav">
-        <a href="/profile" class="sidebar-link"><i class="fas fa-user"></i><span>Profile</span></a>
-        <a href="/dashboard" class="sidebar-link active"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
-        <a href="/discover" class="sidebar-link"><i class="fas fa-compass"></i><span>Discover</span></a>
-        <a href="/teams" class="sidebar-link"><i class="fas fa-users"></i><span>Teams</span></a>
-        <a href="/events" class="sidebar-link"><i class="fas fa-calendar-alt"></i><span>Events</span></a>
+        <a href="/profile" class="sidebar-link">
+            <i class="fas fa-user"></i><span>Profile</span>
+        </a>
+        <a href="/dashboard" class="sidebar-link active"> <i class="fas fa-th-large"></i><span>Dashboard</span>
+        </a>
+        <a href="/discover" class="sidebar-link">
+            <i class="fas fa-compass"></i><span>Discover</span>
+        </a>
+        <a href="/teams" class="sidebar-link">
+            <i class="fas fa-users"></i><span>Teams</span>
+        </a>
+        <a href="/events" class="sidebar-link">
+            <i class="fas fa-calendar-alt"></i><span>Events</span>
+        </a>
     </nav>
+
     <div class="sidebar-footer">
-        <a href="/signout" class="sidebar-link logout-link"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+        <a href="/signout" class="sidebar-link logout-link">
+            <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+        </a>
     </div>
 </aside>
 
-<button id="sidebar-toggle" class="sidebar-toggle-btn"><i class="fas fa-bars"></i></button>
+<button id="sidebar-toggle" class="sidebar-toggle-btn">
+    <i class="fas fa-bars"></i>
+</button>
 <div id="sidebar-overlay" class="sidebar-overlay"></div>
 
 <div class="page-wrapper">
@@ -167,22 +182,31 @@
 </div>
 
 <script>
-    // Sidebar Logic
+    // ========================================
+    // SIDEBAR LOGIC (Standardized)
+    // ========================================
     const toggleBtn = document.getElementById('sidebar-toggle');
     const closeBtn = document.getElementById('sidebar-close');
     const body = document.body;
     const overlay = document.getElementById('sidebar-overlay');
 
     function toggleSidebar() {
-        body.classList.toggle('sidebar-open');
-    }
-    function closeSidebar() {
-        body.classList.remove('sidebar-open');
+        // BREAKPOINT: 992px
+        const isDesktop = window.innerWidth >= 992;
+
+        if (isDesktop) {
+            // DESKTOP: Toggle the CLOSED state
+            body.classList.toggle('sidebar-closed');
+        } else {
+            // MOBILE: Toggle the OPEN state
+            body.classList.toggle('sidebar-open');
+        }
     }
 
     if(toggleBtn) toggleBtn.addEventListener('click', toggleSidebar);
-    if(closeBtn) closeBtn.addEventListener('click', closeSidebar);
-    if(overlay) overlay.addEventListener('click', closeSidebar);
+    if(closeBtn) closeBtn.addEventListener('click', toggleSidebar);
+    if(overlay) overlay.addEventListener('click', toggleSidebar);
+
 
     // Date
     const dateOptions = { weekday: 'long', month: 'short', day: 'numeric' };

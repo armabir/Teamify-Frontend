@@ -1,42 +1,31 @@
 (function() {
     'use strict';
 
-    // ========================================
-    // SIDEBAR TOGGLE LOGIC
+// ========================================
+    // SIDEBAR TOGGLE LOGIC (UPDATED FROM TEAMS)
     // ========================================
     function initSidebar() {
-        const sidebar = document.getElementById('sidebar');
+        const body = document.body;
         const sidebarToggle = document.getElementById('sidebar-toggle');
         const sidebarClose = document.getElementById('sidebar-close');
         const sidebarOverlay = document.getElementById('sidebar-overlay');
-        const body = document.body;
 
         function toggleSidebar() {
-            body.classList.toggle('sidebar-open');
-        }
+            // BREAKPOINT: 992px (Matches CSS)
+            const isDesktop = window.innerWidth >= 992;
 
-        function closeSidebar() {
-            body.classList.remove('sidebar-open');
-        }
-
-        if (sidebarToggle) {
-            sidebarToggle.addEventListener('click', toggleSidebar);
-        }
-
-        if (sidebarClose) {
-            sidebarClose.addEventListener('click', closeSidebar);
-        }
-
-        if (sidebarOverlay) {
-            sidebarOverlay.addEventListener('click', closeSidebar);
-        }
-
-        // Close sidebar on window resize if mobile
-        window.addEventListener('resize', function() {
-            if (window.innerWidth >= 992 && body.classList.contains('sidebar-open')) {
-                closeSidebar();
+            if (isDesktop) {
+                // DESKTOP: Toggle the CLOSED state (hide sidebar)
+                body.classList.toggle('sidebar-closed');
+            } else {
+                // MOBILE: Toggle the OPEN state (show sidebar)
+                body.classList.toggle('sidebar-open');
             }
-        });
+        }
+
+        if(sidebarToggle) sidebarToggle.addEventListener('click', toggleSidebar);
+        if(sidebarClose) sidebarClose.addEventListener('click', toggleSidebar);
+        if(sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
     }
 
     // ========================================

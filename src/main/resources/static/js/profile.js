@@ -1,28 +1,34 @@
 (function() {
     'use strict';
-
-    // ========================================
-    // SIDEBAR & TOGGLE LOGIC (EXISTING)
+// ========================================
+    // SIDEBAR & TOGGLE LOGIC (UPDATED FROM TEAMS)
     // ========================================
     function initSidebar() {
-        const sidebar = document.getElementById('sidebar');
+        const body = document.body;
         const sidebarToggle = document.getElementById('sidebar-toggle');
         const sidebarClose = document.getElementById('sidebar-close');
         const sidebarOverlay = document.getElementById('sidebar-overlay');
-        const body = document.body;
 
-        function toggleSidebar() { body.classList.toggle('sidebar-open'); }
-        function closeSidebar() { body.classList.remove('sidebar-open'); }
+        function toggleSidebar() {
+            // BREAKPOINT: 992px (Matches CSS @media queries)
+            const isDesktop = window.innerWidth >= 992;
 
-        if (sidebarToggle) sidebarToggle.addEventListener('click', toggleSidebar);
-        if (sidebarClose) sidebarClose.addEventListener('click', closeSidebar);
-        if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
-
-        window.addEventListener('resize', function() {
-            if (window.innerWidth >= 1024 && body.classList.contains('sidebar-open')) {
-                closeSidebar();
+            if (isDesktop) {
+                // DESKTOP LOGIC:
+                // Sidebar is OPEN by default.
+                // We toggle the 'sidebar-closed' class to hide it.
+                body.classList.toggle('sidebar-closed');
+            } else {
+                // MOBILE LOGIC:
+                // Sidebar is HIDDEN by default.
+                // We toggle the 'sidebar-open' class to show it.
+                body.classList.toggle('sidebar-open');
             }
-        });
+        }
+
+        if(sidebarToggle) sidebarToggle.addEventListener('click', toggleSidebar);
+        if(sidebarClose) sidebarClose.addEventListener('click', toggleSidebar);
+        if(sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
     }
 
     function initToggleSections() {

@@ -5,6 +5,7 @@ import org.example.teamifyfrontend.client.UserApiClient;
 import org.example.teamifyfrontend.dto.UserDto;
 import org.example.teamifyfrontend.enums.Gender;
 import org.example.teamifyfrontend.model.User;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,9 +18,11 @@ import java.util.ArrayList;
 public class AuthenticationController {
 
     private final UserApiClient userApiClient;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthenticationController(UserApiClient userApiClient) {
+    public AuthenticationController(UserApiClient userApiClient, PasswordEncoder passwordEncoder) {
         this.userApiClient = userApiClient;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping("/signup")
@@ -41,11 +44,11 @@ public class AuthenticationController {
         }
 
         User user = new User();
-        user.setUserName(dto.username());
+        user.setUserName(dto.username().toLowerCase()); // username converted to lower case
         user.setFirstName(dto.firstName());
         user.setLastName(dto.lastName());
         user.setEmail(dto.email());
-        user.setPassword(dto.password()); // need to encrypt late
+        user.setPassword(passwordEncoder.encode(dto.password())); // encrypted password
 
         user.setProjectList(new ArrayList<>());
         user.setExperienceList(new ArrayList<>());
@@ -71,12 +74,12 @@ public class AuthenticationController {
     @PostMapping("/login")
     public String loginPost(@ModelAttribute UserDto dto, HttpSession session){
 
-        session.setAttribute("loggedUser", dto.username());
+        session.setAttribute("loggedUser", dto.username().toLowerCase());
 
-        if (userApiClient.getUserByUsername(dto.username()) == null){
+        if (userApiClient.getUserByUsername(dto.username().toLowerCase()) == null){
             return "redirect:login?error";
         }
-        if (!userApiClient.getUserByUsername(dto.username()).getPassword().equals(dto.password())){
+        if (passwordEncoder.matches(dto.password(), userApiClient.getUserByUsername(dto.username().toLowerCase()).getPassword())){ // encoded password matching
             return "redirect:login?error";
         }
 
